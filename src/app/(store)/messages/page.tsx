@@ -25,6 +25,7 @@ export default function MessagesPage() {
   const [listings, setListings] = useState<Record<string, Listing>>({})
   const [profiles, setProfiles] = useState<Record<string, Profile>>({})
   const [previews, setPreviews] = useState<Record<string, string>>({})
+  const [unreadByConversation, setUnreadByConversation] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
@@ -46,15 +47,32 @@ export default function MessagesPage() {
       setProfiles(Object.fromEntries((profileRows ?? []).map((item) => [item.id, item as Profile])))
     }
     if (conversationIds.length) {
-      const { data: messageRows } = await supabase.from("messages").select("conversation_id,body,created_at").in("conversation_id", conversationIds).order("created_at", { ascending: false })
+      const [{ data: messageRows }, { data: unreadRows }] = await Promise.all([
+        supabase.from("messages").select("conversation_id,body,created_at").in("conversation_id", conversationIds).order("created_at", { ascending: false }),
+        supabase.from("messages").select("conversation_id").in("conversation_id", conversationIds).neq("sender_id", user.id).is("read_at", null),
+      ])
       const latest: Record<string, string> = {}
       for (const message of messageRows ?? []) if (!latest[message.conversation_id]) latest[message.conversation_id] = message.body
+      const unread: Record<string, number> = {}
+      for (const message of unreadRows ?? []) unread[message.conversation_id] = (unread[message.conversation_id] ?? 0) + 1
       setPreviews(latest)
+      setUnreadByConversation(unread)
+    } else {
+      setPreviews({})
+      setUnreadByConversation({})
     }
     setLoading(false)
   }, [user])
 
-  useEffect(() => { if (isReady) void load() }, [isReady, load])
+  useEffect(() => {
+    if (!isReady || !user) return
+    const supabase = createClient()
+    const channel = supabase.channel(`inbox-refresh-${user.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, () => { void load() })
+      .subscribe()
+    void load()
+    return () => { void supabase.removeChannel(channel) }
+  }, [isReady, user, load])
 
   if (!isReady) return <p className="py-20 text-center text-muted-foreground">Chargement de ton espace...</p>
 
@@ -79,7 +97,7 @@ export default function MessagesPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="truncate font-semibold">{listing?.title ?? "Annonce"}</h2><span className="text-xs text-muted-foreground">{new Date(conversation.updated_at).toLocaleDateString("fr-FR")}</span></div>
                   <p className="mt-1 text-sm text-muted-foreground">{profile?.display_name || profile?.username || "Membre GoWill"} · {listing ? euro.format(Number(listing.price)) : ""}</p>
-                  <p className="mt-1 truncate text-sm text-muted-foreground">{previews[conversation.id] ?? "Commencer la conversation"}</p>
+                  <div className="mt-1 flex items-center gap-2"><p className={`min-w-0 flex-1 truncate text-sm ${unreadByConversation[conversation.id] ? "font-semibold text-foreground" : "text-muted-foreground"}`}>{previews[conversation.id] ?? "Commencer la conversation"}</p>{Boolean(unreadByConversation[conversation.id]) && <span className="rounded-full bg-violet-700 px-2 py-0.5 text-[10px] font-semibold text-white">{unreadByConversation[conversation.id]} non lu{unreadByConversation[conversation.id] > 1 ? "s" : ""}</span>}</div>
                 </div>
               </Link>
             )
