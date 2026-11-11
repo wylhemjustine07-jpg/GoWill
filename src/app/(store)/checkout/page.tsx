@@ -268,7 +268,8 @@ export default function CheckoutPage() {
                 </div>
               ) : (
                 <div className="space-y-4 border-t pt-4">
-                  <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">Entre le code postal et le pays pour afficher la zone sur la carte, puis indique manuellement le point relais souhaité. Les formats de codes postaux varient selon les pays.</div>
+                  <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">Choisis le pays du point relais, puis entre son code postal pour afficher la zone sur la carte. Les formats de codes postaux varient selon les pays.</div>
+                  <div className="space-y-2"><Label htmlFor="country">Pays du point relais</Label><Input id="country" name="country" autoComplete="country-name" value={form.country} onChange={handleChange} placeholder="Ex. Japon, France, Canada..." required /></div>
                   <div className="space-y-2"><Label htmlFor="relayPostalCode">Code postal du point relais</Label>
                     <div className="flex gap-2"><Input id="relayPostalCode" name="relayPostalCode" autoComplete="postal-code" value={form.relayPostalCode} onChange={handleChange} placeholder="Code postal local" /><Button type="button" variant="outline" onClick={() => void locatePostalCode()} disabled={postalSearching}><Search className="mr-2 h-4 w-4" />{postalSearching ? "Recherche..." : "Localiser"}</Button></div>
                   </div>
