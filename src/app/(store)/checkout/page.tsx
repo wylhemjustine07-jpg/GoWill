@@ -74,7 +74,7 @@ export default function CheckoutPage() {
 
   async function locatePostalCode() {
     const postalCode = form.relayPostalCode.trim()
-    if (!/^\\d{5}$/.test(postalCode)) {
+    if (!/^\d{5}$/.test(postalCode)) {
       toast.error("Entre un code postal français à 5 chiffres.")
       return
     }
