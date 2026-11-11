@@ -65,7 +65,7 @@ export default function ModifierAnnoncePage() {
       return
     }
     const shippingFeeAmount = Number(form.shippingFee.replace(",", "."))
-    if (!Number.isFinite(shippingFeeAmount) || shippingFeeAmount < 0) {
+    if (!form.shippingFee.trim() || !Number.isFinite(shippingFeeAmount) || shippingFeeAmount < 0) {
       toast.error("Indique une estimation de frais d'expédition valide.")
       return
     }
