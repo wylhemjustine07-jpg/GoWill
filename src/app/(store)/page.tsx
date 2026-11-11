@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowRight, ShoppingBag, Store } from "lucide-react"
+import { ArrowRight, ShoppingBag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { siteConfig } from "@/lib/config"
@@ -26,7 +26,6 @@ export const metadata: Metadata = {
 export default async function HomePage() {
   const categories = await categoryRepository.list()
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
   const { data: latestListings } = await supabase
     .from("listings")
     .select("id,title,price,category,image_urls,location")
@@ -58,21 +57,7 @@ export default async function HomePage() {
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            {user ? (
-              <Button size="lg" variant="outline" className="border-white/30 bg-white/5 text-white hover:bg-white/10 hover:text-white" asChild>
-                <Link href="/deposer">
-                  <Store className="mr-2 h-4 w-4" />
-                  Déposer une annonce
-                </Link>
-              </Button>
-            ) : (
-              <Button size="lg" variant="outline" className="border-white/30 bg-white/5 text-white hover:bg-white/10 hover:text-white" asChild>
-                <Link href="/auth/register">
-                  <Store className="mr-2 h-4 w-4" />
-                  Créer un compte
-                </Link>
-              </Button>
-            )}
+
           </div>
           <p className="mt-5 text-xs text-neutral-400">
             La consultation est ouverte. Un compte sera nécessaire pour publier une annonce.
@@ -146,22 +131,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {!user && (
-        <section className="border-y bg-neutral-50">
-          <div className="mx-auto flex max-w-[1440px] flex-col items-center px-4 py-16 text-center sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Prêt à rejoindre GoWill ?
-            </h2>
-            <p className="mt-4 max-w-xl text-muted-foreground">
-              Créez votre compte pour préparer votre espace membre. La publication d'annonces
-              sera réservée aux utilisateurs connectés.
-            </p>
-            <Button size="lg" className="mt-8" asChild>
-              <Link href="/auth/register">Créer mon compte</Link>
-            </Button>
-          </div>
-        </section>
-      )}
 
       <section className="bg-neutral-900 text-white">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center px-4 py-16 text-center sm:px-6 lg:px-8">
