@@ -54,6 +54,7 @@ export default function MesAnnoncesPage() {
             <article key={listing.id} className="flex flex-col gap-4 rounded-xl border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h2 className="font-semibold">{listing.title}</h2><span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs">{statusLabel[listing.status]}</span></div><p className="mt-1 text-sm text-muted-foreground">{listing.category} · {price.format(Number(listing.price))}</p><p className="mt-1 text-xs text-muted-foreground">Publiée le {new Date(listing.created_at).toLocaleDateString("fr-FR")}</p></div>
               <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" asChild><Link href={`/account/annonces/${listing.id}/modifier`}>Modifier</Link></Button>
                 {listing.status === "active" ? <Button size="sm" variant="outline" onClick={() => void changeStatus(listing.id, "sold")}>Marquer vendu</Button> : listing.status === "sold" || listing.status === "archived" ? <Button size="sm" variant="outline" onClick={() => void changeStatus(listing.id, "active")}>Remettre en ligne</Button> : null}
                 <Button size="sm" variant="destructive" onClick={() => void removeListing(listing.id)}>Supprimer</Button>
               </div>
