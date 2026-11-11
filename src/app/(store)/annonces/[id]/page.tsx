@@ -1,0 +1,67 @@
+"use client"
+
+import Link from "next/link"
+import Image from "next/image"
+import { useEffect, useState } from "react"
+import { useParams } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
+import { Button } from "@/components/ui/button"
+
+type Listing = {
+  id: string
+  title: string
+  description: string
+  price: number
+  category: string
+  item_condition: string
+  location: string | null
+  image_urls: string[]
+  seller_id: string
+  created_at: string
+}
+
+const euro = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" })
+const conditionLabels: Record<string, string> = { new: "Neuf", like_new: "Comme neuf", good: "Bon état", fair: "État correct", for_parts: "Pour pièces" }
+
+export default function AnnonceDetailPage() {
+  const params = useParams<{ id: string }>()
+  const [listing, setListing] = useState<Listing | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let active = true
+    createClient().from("listings").select("*").eq("id", params.id).eq("status", "active").maybeSingle()
+      .then(({ data }) => {
+        if (active) { setListing(data as Listing | null); setLoading(false) }
+      })
+    return () => { active = false }
+  }, [params.id])
+
+  if (loading) return <p className="py-24 text-center text-muted-foreground">Chargement de l'annonce...</p>
+  if (!listing) return <section className="mx-auto max-w-2xl px-4 py-24 text-center"><h1 className="text-2xl font-bold">Annonce introuvable</h1><Link className="mt-4 inline-block text-violet-700 underline" href="/annonces">Retour aux annonces</Link></section>
+
+  return (
+    <section className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-2 sm:px-6">
+      <div className="relative aspect-square overflow-hidden rounded-2xl bg-neutral-100">
+        {listing.image_urls?.[0] ? <Image src={listing.image_urls[0]} alt={listing.title} fill unoptimized className="object-cover" /> : <div className="flex h-full items-center justify-center text-7xl text-neutral-300">📦</div>}
+      </div>
+      <div className="flex flex-col">
+        <p className="text-sm font-semibold text-violet-700">{listing.category}</p>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight">{listing.title}</h1>
+        <p className="mt-4 text-2xl font-bold">{euro.format(Number(listing.price))}</p>
+        <div className="mt-5 flex flex-wrap gap-2 text-sm text-muted-foreground">
+          <span className="rounded-full bg-neutral-100 px-3 py-1">{conditionLabels[listing.item_condition] ?? "État non précisé"}</span>
+          {listing.location && <span className="rounded-full bg-neutral-100 px-3 py-1">{listing.location}</span>}
+        </div>
+        <div className="mt-8 border-t pt-6">
+          <h2 className="font-semibold">Description</h2>
+          <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-muted-foreground">{listing.description}</p>
+        </div>
+        <div className="mt-8">
+          <Button asChild className="w-full"><Link href="/auth/login">Se connecter pour contacter le vendeur</Link></Button>
+          <p className="mt-3 text-center text-xs text-muted-foreground">La messagerie entre acheteurs et vendeurs sera ajoutée dans une prochaine étape.</p>
+        </div>
+      </div>
+    </section>
+  )
+}
