@@ -15,7 +15,7 @@ const categories = ["Mode", "Maison", "High-tech", "Téléphones", "Jeux vidéo"
 export default function DeposerPage() {
   const router = useRouter()
   const { user, isReady } = useAuthGuard()
-  const [form, setForm] = useState({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "" })
+  const [form, setForm] = useState({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "", shippingFee: "0", shippingFeePayer: "buyer" as "buyer" | "seller" | "split", shipsInternationally: true })
   const [images, setImages] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -48,6 +48,11 @@ export default function DeposerPage() {
       toast.error("Indique la ville et le pays depuis lesquels tu expédies l'article.")
       return
     }
+    const shippingFeeAmount = Number(form.shippingFee.replace(",", "."))
+    if (!Number.isFinite(shippingFeeAmount) || shippingFeeAmount < 0) {
+      toast.error("Indique une estimation de frais d'expédition valide.")
+      return
+    }
     setLoading(true)
     const supabase = createClient()
     const imageUrls: string[] = []
@@ -67,6 +72,9 @@ export default function DeposerPage() {
         category: form.category,
         item_condition: form.item_condition,
         location: `${form.shippingCity.trim()}, ${form.shippingCountry.trim()}`,
+        shipping_fee_amount: shippingFeeAmount,
+        shipping_fee_payer: form.shippingFeePayer,
+        ships_internationally: form.shipsInternationally,
         image_urls: imageUrls,
         status: "active",
       })
@@ -124,7 +132,24 @@ export default function DeposerPage() {
             <Label htmlFor="shippingCountry">Pays d'expédition</Label>
             <Input id="shippingCountry" maxLength={80} value={form.shippingCountry} onChange={(e) => update("shippingCountry", e.target.value)} placeholder="Ex. Japon, France, Canada..." autoComplete="country-name" required />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="shippingFee">Frais d'expédition estimés (€)</Label>
+            <Input id="shippingFee" type="number" min="0" step="0.01" value={form.shippingFee} onChange={(e) => update("shippingFee", e.target.value)} required />
+            <p className="text-xs text-muted-foreground">Indique ton estimation en euros. 0 signifie que tu offres l'expédition.</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="shippingFeePayer">Qui paie l'expédition ?</Label>
+            <select id="shippingFeePayer" value={form.shippingFeePayer} onChange={(e) => setForm((current) => ({ ...current, shippingFeePayer: e.target.value as "buyer" | "seller" | "split" }))} className="h-10 w-full rounded-md border bg-background px-3 text-sm">
+              <option value="buyer">L'acheteur paie 100 %</option>
+              <option value="split">Partagé à 50 / 50</option>
+              <option value="seller">Le vendeur paie 100 %</option>
+            </select>
+          </div>
         </div>
+        <label className="flex items-start gap-3 rounded-lg border p-3 text-sm">
+          <input type="checkbox" checked={form.shipsInternationally} onChange={(e) => setForm((current) => ({ ...current, shipsInternationally: e.target.checked }))} className="mt-1 h-4 w-4" />
+          <span><span className="font-medium">J'accepte les commandes internationales</span><span className="mt-1 block text-xs text-muted-foreground">Décoche cette case pour limiter l'annonce aux acheteurs de ton pays. La couverture dépendra toujours des transporteurs disponibles.</span></span>
+        </label>
         <div className="space-y-2">
           <Label htmlFor="images">Photos (jusqu'à 5)</Label>
           <input id="images" type="file" accept="image/*" multiple onChange={(e) => selectImages(e.target.files)} className="block w-full rounded-md border p-3 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-neutral-100 file:px-3 file:py-2" />
