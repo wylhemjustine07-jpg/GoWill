@@ -9,6 +9,7 @@ import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { FavoriteButton } from "@/components/listings/favorite-button"
+import { useAuthStore } from "@/store/auth"
 
 type Listing = {
   id: string
@@ -32,6 +33,7 @@ export default function AnnonceDetailPage() {
   const [listing, setListing] = useState<Listing | null>(null)
   const [loading, setLoading] = useState(true)
   const [contacting, setContacting] = useState(false)
+  const currentUser = useAuthStore((state) => state.user)
 
   useEffect(() => {
     let active = true
@@ -96,7 +98,7 @@ export default function AnnonceDetailPage() {
           <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-muted-foreground">{listing.description}</p>
         </div>
         <div className="mt-8">
-          {listing.seller_id === undefined ? null : <Button onClick={() => void contactSeller()} disabled={contacting} className="w-full">
+          {currentUser?.id === listing.seller_id ? <Button asChild variant="outline" className="w-full"><Link href="/account/annonces">Gérer mon annonce</Link></Button> : <Button onClick={() => void contactSeller()} disabled={contacting} className="w-full">
             <MessageCircle className="mr-2 h-4 w-4" />{contacting ? "Ouverture..." : "Contacter le vendeur"}
           </Button>}
           <p className="mt-3 text-center text-xs text-muted-foreground">Échange directement avec le vendeur grâce à la messagerie GoWill.</p>
