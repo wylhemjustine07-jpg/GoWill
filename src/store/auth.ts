@@ -1,140 +1,107 @@
 "use client"
 
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
 import type { User, Address } from "@/types"
+import { createClient } from "@/lib/supabase/client"
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js"
 
 interface AuthState {
   user: User | null
   isAuthenticated: boolean
-
-  login: (email: string, password: string) => boolean
-  register: (data: { firstName: string; lastName: string; email: string; password: string }) => boolean
+  isLoading: boolean
+  initialize: () => () => void
+  login: (email: string, password: string) => Promise<boolean>
+  register: (data: { firstName: string; lastName: string; email: string; password: string }) => Promise<{ success: boolean; needsEmailConfirmation: boolean }>
   logout: () => void
   updateProfile: (data: Partial<Pick<User, "firstName" | "lastName" | "email">>) => void
   addAddress: (address: Omit<Address, "id">) => void
   removeAddress: (id: string) => void
 }
 
-// Demo users — in production, this comes from your auth provider
-const DEMO_USERS: Array<User & { password: string }> = [
-  {
-    id: "user-1",
-    email: "admin@example.com",
-    firstName: "Admin",
-    lastName: "User",
-    role: "admin",
-    addresses: [],
-    createdAt: "2025-01-01T00:00:00Z",
-    updatedAt: "2025-01-01T00:00:00Z",
-    password: "password123",
-  },
-  {
-    id: "user-2",
-    email: "demo@example.com",
-    firstName: "Jane",
-    lastName: "Smith",
+function mapUser(sessionUser: { id: string; email?: string; created_at: string; user_metadata?: Record<string, unknown> }): User {
+  const firstName = String(sessionUser.user_metadata?.first_name ?? sessionUser.user_metadata?.full_name ?? "Membre").split(" ")[0]
+  const lastName = String(sessionUser.user_metadata?.last_name ?? "")
+  return {
+    id: sessionUser.id,
+    email: sessionUser.email ?? "",
+    firstName,
+    lastName,
     role: "customer",
-    addresses: [
-      {
-        id: "addr-demo-1",
-        type: "shipping",
-        firstName: "Jane",
-        lastName: "Smith",
-        line1: "123 Main Street",
-        city: "San Francisco",
-        state: "CA",
-        postalCode: "94105",
-        country: "US",
-        isDefault: true,
-      },
-    ],
-    createdAt: "2025-01-15T00:00:00Z",
-    updatedAt: "2025-01-15T00:00:00Z",
-    password: "password123",
-  },
-]
+    addresses: [],
+    createdAt: sessionUser.created_at,
+    updatedAt: new Date().toISOString(),
+  }
+}
 
-export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      user: null,
-      isAuthenticated: false,
+let unsubscribe: (() => void) | null = null
+let initializationPromise: Promise<void> | null = null
 
-      login: (email, password) => {
-        const found = DEMO_USERS.find(
-          (u) => u.email === email && u.password === password
-        )
-        if (found) {
-          const { password: _, ...user } = found
-          set({ user, isAuthenticated: true })
-          return true
-        }
-        return false
-      },
+export const useAuthStore = create<AuthState>()((set, get) => ({
+  user: null,
+  isAuthenticated: false,
+  isLoading: true,
 
-      register: (data) => {
-        const exists = DEMO_USERS.some((u) => u.email === data.email)
-        if (exists) return false
-
-        const newUser: User = {
-          id: `user-${Date.now()}`,
-          email: data.email,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          role: "customer",
-          addresses: [],
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        }
-
-        set({ user: newUser, isAuthenticated: true })
-        return true
-      },
-
-      logout: () => set({ user: null, isAuthenticated: false }),
-
-      updateProfile: (data) => {
-        const user = get().user
-        if (!user) return
-        set({
-          user: {
-            ...user,
-            ...data,
-            updatedAt: new Date().toISOString(),
-          },
-        })
-      },
-
-      addAddress: (address) => {
-        const user = get().user
-        if (!user) return
-        const newAddress: Address = {
-          ...address,
-          id: `addr-${Date.now()}`,
-        }
-        set({
-          user: {
-            ...user,
-            addresses: [...user.addresses, newAddress],
-          },
-        })
-      },
-
-      removeAddress: (id) => {
-        const user = get().user
-        if (!user) return
-        set({
-          user: {
-            ...user,
-            addresses: user.addresses.filter((a) => a.id !== id),
-          },
-        })
-      },
-    }),
-    {
-      name: "auth-storage",
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+  initialize: () => {
+    if (unsubscribe) return unsubscribe
+    const supabase = createClient()
+    const sync = (session: Session | null) => set({
+      user: session?.user ? mapUser(session.user) : null,
+      isAuthenticated: Boolean(session?.user),
+      isLoading: false,
+    })
+    const { data } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session) => sync(session))
+    unsubscribe = () => {
+      data.subscription.unsubscribe()
+      unsubscribe = null
+      initializationPromise = null
     }
-  )
-)
+    if (!initializationPromise) {
+      initializationPromise = supabase.auth.getSession().then(({ data: sessionData }) => sync(sessionData.session))
+    }
+    return unsubscribe
+  },
+
+  login: async (email, password) => {
+    const { data, error } = await createClient().auth.signInWithPassword({ email, password })
+    if (error || !data.user) return false
+    set({ user: mapUser(data.user), isAuthenticated: true, isLoading: false })
+    return true
+  },
+
+  register: async ({ firstName, lastName, email, password }) => {
+    const { data, error } = await createClient().auth.signUp({
+      email,
+      password,
+      options: { data: { first_name: firstName, last_name: lastName, full_name: `${firstName} ${lastName}`.trim() } },
+    })
+    if (error || !data.user) return { success: false, needsEmailConfirmation: false }
+    if (data.session) {
+      set({ user: mapUser(data.user), isAuthenticated: true, isLoading: false })
+      return { success: true, needsEmailConfirmation: false }
+    }
+    return { success: true, needsEmailConfirmation: true }
+  },
+
+  logout: () => {
+    void createClient().auth.signOut()
+    set({ user: null, isAuthenticated: false, isLoading: false })
+  },
+
+  updateProfile: (data) => {
+    const user = get().user
+    if (!user) return
+    set({ user: { ...user, ...data, updatedAt: new Date().toISOString() } })
+  },
+
+  addAddress: (address) => {
+    const user = get().user
+    if (!user) return
+    set({ user: { ...user, addresses: [...user.addresses, { ...address, id: crypto.randomUUID() }] } })
+  },
+
+  removeAddress: (id) => {
+    const user = get().user
+    if (!user) return
+    set({ user: { ...user, addresses: user.addresses.filter((address) => address.id !== id) } })
+  },
+}))
