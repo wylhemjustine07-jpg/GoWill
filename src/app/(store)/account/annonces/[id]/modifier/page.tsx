@@ -12,13 +12,13 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 const categories = ["Mode", "Maison", "High-tech", "Téléphones", "Jeux vidéo", "Sports et loisirs", "Beauté", "Livres", "Jouets", "Autre"]
-type ListingForm = { title: string; description: string; price: string; category: string; item_condition: string; location: string }
+type ListingForm = { title: string; description: string; price: string; category: string; item_condition: string; shippingCity: string; shippingCountry: string }
 
 export default function ModifierAnnoncePage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const { user, isReady } = useAuthGuard()
-  const [form, setForm] = useState<ListingForm>({ title: "", description: "", price: "", category: "Mode", item_condition: "good", location: "" })
+  const [form, setForm] = useState<ListingForm>({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "" })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [missing, setMissing] = useState(false)
@@ -30,7 +30,19 @@ export default function ModifierAnnoncePage() {
       .then(({ data, error }) => {
         if (!active) return
         if (error || !data) setMissing(true)
-        else setForm({ title: data.title, description: data.description, price: String(data.price), category: data.category, item_condition: data.item_condition, location: data.location ?? "" })
+        else {
+          const storedLocation = data.location ?? ""
+          const commaIndex = storedLocation.lastIndexOf(",")
+          setForm({
+            title: data.title,
+            description: data.description,
+            price: String(data.price),
+            category: data.category,
+            item_condition: data.item_condition,
+            shippingCity: commaIndex >= 0 ? storedLocation.slice(0, commaIndex).trim() : storedLocation,
+            shippingCountry: commaIndex >= 0 ? storedLocation.slice(commaIndex + 1).trim() : "",
+          })
+        }
         setLoading(false)
       })
     return () => { active = false }
@@ -45,6 +57,10 @@ export default function ModifierAnnoncePage() {
     if (!user) return
     const price = Number(form.price.replace(",", "."))
     if (!Number.isFinite(price) || price < 0) { toast.error("Indique un prix valide."); return }
+    if (!form.shippingCity.trim() || !form.shippingCountry.trim()) {
+      toast.error("Indique la ville et le pays depuis lesquels tu expédies l'article.")
+      return
+    }
     setSaving(true)
     const { error } = await createClient().from("listings").update({
       title: form.title.trim(),
@@ -52,7 +68,7 @@ export default function ModifierAnnoncePage() {
       price,
       category: form.category,
       item_condition: form.item_condition,
-      location: form.location.trim() || null,
+      location: `${form.shippingCity.trim()}, ${form.shippingCountry.trim()}`,
       updated_at: new Date().toISOString(),
     }).eq("id", params.id).eq("seller_id", user.id)
     setSaving(false)
@@ -75,7 +91,8 @@ export default function ModifierAnnoncePage() {
           <div className="space-y-2"><Label htmlFor="price">Prix (€)</Label><Input id="price" type="number" min="0" step="0.01" value={form.price} onChange={(e) => update("price", e.target.value)} required /></div>
           <div className="space-y-2"><Label htmlFor="category">Catégorie</Label><select id="category" value={form.category} onChange={(e) => update("category", e.target.value)} className="h-10 w-full rounded-md border bg-background px-3 text-sm">{categories.map((category) => <option key={category}>{category}</option>)}</select></div>
           <div className="space-y-2"><Label htmlFor="item_condition">État du produit</Label><select id="item_condition" value={form.item_condition} onChange={(e) => update("item_condition", e.target.value)} className="h-10 w-full rounded-md border bg-background px-3 text-sm"><option value="new">Neuf</option><option value="like_new">Comme neuf</option><option value="good">Bon état</option><option value="fair">État correct</option><option value="for_parts">Pour pièces</option></select></div>
-          <div className="space-y-2"><Label htmlFor="location">Ville (facultatif)</Label><Input id="location" maxLength={100} value={form.location} onChange={(e) => update("location", e.target.value)} /></div>
+          <div className="space-y-2"><Label htmlFor="shippingCity">Ville d'expédition</Label><Input id="shippingCity" maxLength={100} value={form.shippingCity} onChange={(e) => update("shippingCity", e.target.value)} placeholder="Ex. Tokyo" autoComplete="address-level2" required /></div>
+          <div className="space-y-2"><Label htmlFor="shippingCountry">Pays d'expédition</Label><Input id="shippingCountry" maxLength={80} value={form.shippingCountry} onChange={(e) => update("shippingCountry", e.target.value)} placeholder="Ex. Japon, France, Canada..." autoComplete="country-name" required /></div>
         </div>
         <div className="flex flex-col-reverse gap-3 sm:flex-row"><Button type="submit" className="flex-1" disabled={saving}>{saving ? "Enregistrement..." : "Enregistrer les modifications"}</Button><Button type="button" variant="outline" asChild><Link href="/account/annonces">Annuler</Link></Button></div>
       </form>
