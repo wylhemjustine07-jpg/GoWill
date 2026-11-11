@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
+import { FavoriteButton } from "@/components/listings/favorite-button"
 
 type Listing = {
   id: string
@@ -47,7 +48,7 @@ export default function AnnonceDetailPage() {
       </div>
       <div className="flex flex-col">
         <p className="text-sm font-semibold text-violet-700">{listing.category}</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">{listing.title}</h1>
+        <div className="flex items-start justify-between gap-4"><h1 className="mt-2 text-3xl font-bold tracking-tight">{listing.title}</h1><FavoriteButton listingId={listing.id} className="mt-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-full border hover:bg-neutral-50" /></div>
         <p className="mt-4 text-2xl font-bold">{euro.format(Number(listing.price))}</p>
         <div className="mt-5 flex flex-wrap gap-2 text-sm text-muted-foreground">
           <span className="rounded-full bg-neutral-100 px-3 py-1">{conditionLabels[listing.item_condition] ?? "État non précisé"}</span>
