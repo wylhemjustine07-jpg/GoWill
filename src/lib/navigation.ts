@@ -12,9 +12,6 @@ export interface NavSection {
 export const shopLinks: NavItem[] = [
   { name: "Toutes les annonces", href: "/annonces" },
   { name: "Déposer une annonce", href: "/deposer" },
-  { name: "Mode", href: "/annonces?categorie=Mode" },
-  { name: "Maison", href: "/annonces?categorie=Maison" },
-  { name: "High-tech", href: "/annonces?categorie=High-tech" },
 ]
 
 export const accountLinks: NavItem[] = [
