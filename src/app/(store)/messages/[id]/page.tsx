@@ -14,7 +14,7 @@ import { createClient } from "@/lib/supabase/client"
 type Conversation = { id: string; listing_id: string; buyer_id: string; seller_id: string }
 type Listing = { id: string; title: string; price: number; image_urls: string[] }
 type Profile = { id: string; display_name: string | null; username: string | null }
-type Message = { id: string; conversation_id: string; sender_id: string; body: string; created_at: string }
+type Message = { id: string; conversation_id: string; sender_id: string; body: string; created_at: string; read_at: string | null }
 
 const euro = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" })
 
@@ -32,7 +32,12 @@ export default function ConversationPage() {
   const loadMessages = useCallback(async () => {
     if (!user) return
     const supabase = createClient()
-    const { data, error } = await supabase.from("messages").select("id,conversation_id,sender_id,body,created_at").eq("conversation_id", params.id).order("created_at", { ascending: true })
+    await supabase.from("messages")
+      .update({ read_at: new Date().toISOString() })
+      .eq("conversation_id", params.id)
+      .neq("sender_id", user.id)
+      .is("read_at", null)
+    const { data, error } = await supabase.from("messages").select("id,conversation_id,sender_id,body,created_at,read_at").eq("conversation_id", params.id).order("created_at", { ascending: true })
     if (error) { toast.error("Impossible de charger les messages."); return }
     setMessages((data ?? []) as Message[])
   }, [params.id, user])
