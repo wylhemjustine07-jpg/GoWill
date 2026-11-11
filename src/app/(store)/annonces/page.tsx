@@ -20,6 +20,9 @@ type Listing = {
   image_urls: string[]
   created_at: string
   seller_id: string
+  shipping_fee_amount: number
+  shipping_fee_payer: "buyer" | "seller" | "split"
+  ships_internationally: boolean
 }
 
 const euro = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" })
@@ -31,7 +34,7 @@ export default function AnnoncesPage() {
 
   useEffect(() => {
     let active = true
-    createClient().from("listings").select("id,title,description,price,category,item_condition,location,image_urls,created_at,seller_id").eq("status", "active").order("created_at", { ascending: false }).limit(60)
+    createClient().from("listings").select("id,title,description,price,category,item_condition,location,image_urls,created_at,seller_id,shipping_fee_amount,shipping_fee_payer,ships_internationally").eq("status", "active").order("created_at", { ascending: false }).limit(60)
       .then(({ data, error }) => {
         if (!active) return
         if (!error && data) setListings(data as Listing[])
@@ -73,6 +76,8 @@ export default function AnnoncesPage() {
                   <h2 className="mt-1 line-clamp-2 text-sm font-medium">{listing.title}</h2>
                   <p className="mt-2 font-bold">{euro.format(Number(listing.price))}</p>
                   {listing.location && <p className="mt-1 truncate text-xs text-muted-foreground">Expédié depuis : {listing.location}</p>}
+                  <p className="mt-1 text-xs text-muted-foreground">Expédition estimée : {Number(listing.shipping_fee_amount ?? 0) === 0 ? "offerte" : euro.format(Number(listing.shipping_fee_amount))}</p>
+                  <p className="text-xs text-muted-foreground">{listing.ships_internationally ? "International accepté" : "Pays du vendeur uniquement"}</p>
                 </div>
               </Link>
               <div className="px-3 pb-3"><BuyListingButton listing={listing} className="w-full" size="sm" /></div>
