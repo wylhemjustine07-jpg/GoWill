@@ -23,9 +23,13 @@ type Listing = {
   image_urls: string[]
   seller_id: string
   created_at: string
+  shipping_fee_amount: number
+  shipping_fee_payer: "buyer" | "seller" | "split"
+  ships_internationally: boolean
 }
 
 const euro = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" })
+const payerLabels = { buyer: "payés par l'acheteur", split: "partagés à 50 / 50", seller: "payés par le vendeur" } as const
 const conditionLabels: Record<string, string> = { new: "Neuf", like_new: "Comme neuf", good: "Bon état", fair: "État correct", for_parts: "Pour pièces" }
 
 export default function AnnonceDetailPage() {
@@ -93,6 +97,11 @@ export default function AnnonceDetailPage() {
         <div className="mt-5 flex flex-wrap gap-2 text-sm text-muted-foreground">
           <span className="rounded-full bg-neutral-100 px-3 py-1">{conditionLabels[listing.item_condition] ?? "État non précisé"}</span>
           {listing.location && <span className="rounded-full bg-neutral-100 px-3 py-1">Expédié depuis : {listing.location}</span>}
+        </div>
+        <div className="mt-6 rounded-xl border bg-muted/30 p-4">
+          <h2 className="font-semibold">Expédition</h2>
+          <p className="mt-2 text-sm">{euro.format(Number(listing.shipping_fee_amount ?? 0))} estimés, {payerLabels[listing.shipping_fee_payer ?? "buyer"]}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{listing.ships_internationally ? "Le vendeur accepte les demandes internationales, sous réserve de la couverture du transporteur." : "Le vendeur limite cette annonce aux acheteurs de son pays."}</p>
         </div>
         <div className="mt-8 border-t pt-6">
           <h2 className="font-semibold">Description</h2>
