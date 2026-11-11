@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils"
 import { shopLinks, mobileMenuSections } from "@/lib/navigation"
 import { siteConfig } from "@/lib/config"
 import { useTranslations } from "next-intl"
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect } from "react"
 import type { Category } from "@/types"
 import { useCartStore } from "@/store/cart"
 import { useAuthStore } from "@/store/auth"
@@ -240,7 +240,7 @@ export function Header({ categories = [] }: HeaderProps) {
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => router.push("/account")}>
-                  {tCommon("signIn")}
+                  Mon compte
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.push("/messages")}>
                   Mes messages
@@ -249,7 +249,7 @@ export function Header({ categories = [] }: HeaderProps) {
                   {tCommon("orders")}
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.push("/account/settings")}>
-                  Settings
+                  Paramètres
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => { logout(); router.push("/") }}>
