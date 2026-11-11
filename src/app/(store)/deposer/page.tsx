@@ -93,7 +93,7 @@ export default function DeposerPage() {
         </div>
         <div className="space-y-2">
           <Label htmlFor="description">Description</Label>
-          <Textarea id="description" minLength={10} maxLength={5000} rows={5} value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Décris le produit, son état et ses caractéristiques..." required />
+          <Textarea id="description" maxLength={5000} rows={5} value={form.description} onChange={(e) => update("description", e.target.value)} placeholder="Décris le produit, son état et ses caractéristiques..." required />
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
