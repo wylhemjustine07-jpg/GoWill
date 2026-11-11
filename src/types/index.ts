@@ -112,6 +112,8 @@ export interface Category {
 
 // --- Cart ---
 
+export type ShippingFeePayer = "buyer" | "seller" | "split"
+
 export interface CartItem {
   id: string
   variantId: string
@@ -123,6 +125,11 @@ export interface CartItem {
   price: number
   quantity: number
   lineTotal: number
+  sellerId?: string
+  shippingOrigin?: string | null
+  shippingFeeAmount?: number // cents, seller-entered estimate
+  shippingFeePayer?: ShippingFeePayer
+  shipsInternationally?: boolean
 }
 
 export interface Cart {
@@ -163,6 +170,11 @@ export interface OrderLineItem {
   price: number
   quantity: number
   total: number
+  sellerId?: string
+  shippingOrigin?: string | null
+  shippingFeeAmount?: number
+  shippingFeePayer?: ShippingFeePayer
+  shipsInternationally?: boolean
 }
 
 export interface Order {
