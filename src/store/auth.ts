@@ -13,7 +13,7 @@ interface AuthState {
   login: (email: string, password: string) => Promise<boolean>
   register: (data: { firstName: string; lastName: string; email: string; password: string }) => Promise<{ success: boolean; needsEmailConfirmation: boolean }>
   logout: () => void
-  updateProfile: (data: Partial<Pick<User, "firstName" | "lastName" | "email">>) => void
+  updateProfile: (data: Partial<Pick<User, "firstName" | "lastName">>) => Promise<boolean>
   addAddress: (address: Omit<Address, "id">) => void
   removeAddress: (id: string) => void
 }
