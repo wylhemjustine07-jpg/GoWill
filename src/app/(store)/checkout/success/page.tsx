@@ -30,7 +30,7 @@ function CheckoutSuccessContent() {
       <div className="flex flex-col items-center text-center">
         <Info className="h-14 w-14 text-primary" />
         <h1 className="mt-6 text-3xl font-bold tracking-tight">Aperçu de commande créé</h1>
-        <p className="mt-4 max-w-xl text-muted-foreground">Cette démonstration est enregistrée uniquement dans le stockage local de ce navigateur. Aucune commande n'a été envoyée à un vendeur, aucun paiement n'a été effectué et aucun colis ne sera expédié.</p>
+        <p className="mt-4 max-w-xl text-muted-foreground">Cette démonstration est enregistrée uniquement dans le stockage local de ce navigateur. Les frais sont des estimations saisies par les vendeurs ; aucune commande n'a été envoyée, aucun paiement n'a été effectué et aucun colis ne sera expédié.</p>
 
         {order && (
           <Card className="mt-8 w-full text-left">
@@ -40,7 +40,7 @@ function CheckoutSuccessContent() {
               <div className="flex justify-between gap-4 text-sm"><span className="text-muted-foreground">Livraison choisie</span><span>{order.deliveryMethod === "relay" ? "Point relais" : "À domicile"}</span></div>
               {order.deliveryMethod === "relay" && order.relayName && <div className="flex justify-between gap-4 text-sm"><span className="text-muted-foreground">Point relais saisi</span><span className="text-right font-medium">{order.relayName}</span></div>}
               <Separator />
-              {order.items.map((item) => <div key={item.id} className="flex justify-between gap-4 text-sm"><span className="text-muted-foreground">{item.name} × {item.quantity}</span><span>{formatPrice(item.total)}</span></div>)}
+              {order.items.map((item) => <div key={item.id} className="flex justify-between gap-4 text-sm"><div><span className="text-muted-foreground">{item.name} × {item.quantity}</span>{item.sellerId && <p className="mt-1 text-xs text-muted-foreground">Expédié depuis : {item.shippingOrigin || "Origine non renseignée"} · estimation totale : {formatPrice((item.shippingFeeAmount ?? 0) * item.quantity)} · {item.shippingFeePayer === "seller" ? "vendeur" : item.shippingFeePayer === "split" ? "partagé 50 / 50" : "acheteur"}</p>}</div><span>{formatPrice(item.total)}</span></div>)}
               <Separator />
               <div className="flex justify-between text-sm"><span className="text-muted-foreground">Sous-total</span><span>{formatPrice(order.subtotal)}</span></div>
               <div className="flex justify-between text-sm"><span className="text-muted-foreground">Livraison (simulation)</span><span>{order.shipping === 0 ? "Offerte" : formatPrice(order.shipping)}</span></div>
