@@ -178,6 +178,8 @@ export interface Order {
   total: number
   currency: string
   shippingAddress: Address
+  deliveryMethod?: "home" | "relay"
+  relayName?: string
   billingAddress?: Address
   customerEmail: string
   customerName: string
