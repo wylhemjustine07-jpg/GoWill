@@ -100,7 +100,7 @@ export default function AnnonceDetailPage() {
         </div>
         <div className="mt-6 rounded-xl border bg-muted/30 p-4">
           <h2 className="font-semibold">Expédition</h2>
-          <p className="mt-2 text-sm">{euro.format(Number(listing.shipping_fee_amount ?? 0))} estimés, {payerLabels[listing.shipping_fee_payer ?? "buyer"]}</p>
+          <p className="mt-2 text-sm">{Number(listing.shipping_fee_amount ?? 0) === 0 ? "Expédition offerte" : euro.format(Number(listing.shipping_fee_amount)) + " estimés, " + payerLabels[listing.shipping_fee_payer ?? "buyer"]}</p>
           <p className="mt-1 text-xs text-muted-foreground">{listing.ships_internationally ? "Le vendeur accepte les demandes internationales, sous réserve de la couverture du transporteur." : "Le vendeur limite cette annonce aux acheteurs de son pays."}</p>
         </div>
         <div className="mt-8 border-t pt-6">
