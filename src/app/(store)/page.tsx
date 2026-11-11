@@ -5,10 +5,10 @@ import { ArrowRight, ShoppingBag, Store } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { siteConfig } from "@/lib/config"
-import { ProductGrid } from "@/components/products/product-grid"
 import { NewsletterForm } from "@/components/layout/newsletter-form"
 import { PLACEHOLDER_IMAGE } from "@/lib/constants"
-import { productRepository, categoryRepository } from "@/lib/repositories"
+import { categoryRepository } from "@/lib/repositories"
+import { createClient } from "@/lib/supabase/server"
 
 export const metadata: Metadata = {
   title: "Acheter et vendre en ligne",
@@ -25,7 +25,14 @@ export const metadata: Metadata = {
 
 export default async function HomePage() {
   const categories = await categoryRepository.list()
-  const featuredProducts = await productRepository.getFeatured(4)
+  const supabase = await createClient()
+  const { data: latestListings } = await supabase
+    .from("listings")
+    .select("id,title,price,category,image_urls,location")
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(4)
+  const euro = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" })
 
   return (
     <div className="flex flex-col">
@@ -103,8 +110,29 @@ export default async function HomePage() {
             Voir toutes les annonces
           </Link>
         </div>
-        <div className="mt-8">
-          <ProductGrid products={featuredProducts} />
+        <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          {(latestListings ?? []).map((listing) => (
+            <Link key={listing.id} href={`/annonces/${listing.id}`} className="group overflow-hidden rounded-xl border bg-white transition-shadow hover:shadow-md">
+              <div className="relative aspect-square bg-neutral-100">
+                {listing.image_urls?.[0] ? (
+                  <Image src={listing.image_urls[0]} alt={listing.title} fill unoptimized className="object-cover transition-transform group-hover:scale-105" />
+                ) : <div className="flex h-full items-center justify-center text-4xl text-neutral-300">📦</div>}
+              </div>
+              <div className="p-3">
+                <p className="text-xs text-violet-700">{listing.category}</p>
+                <h3 className="mt-1 line-clamp-2 text-sm font-medium">{listing.title}</h3>
+                <p className="mt-2 font-bold">{euro.format(Number(listing.price))}</p>
+                {listing.location && <p className="mt-1 truncate text-xs text-muted-foreground">{listing.location}</p>}
+              </div>
+            </Link>
+          ))}
+          {(!latestListings || latestListings.length === 0) && (
+            <div className="col-span-full rounded-xl border border-dashed p-10 text-center">
+              <p className="font-medium">Les premières annonces arrivent bientôt.</p>
+              <p className="mt-2 text-sm text-muted-foreground">Connecte-toi pour publier le premier produit sur GoWill.</p>
+              <Link href="/deposer" className="mt-4 inline-block text-sm font-semibold text-violet-700">Déposer une annonce</Link>
+            </div>
+          )}
         </div>
       </section>
 
