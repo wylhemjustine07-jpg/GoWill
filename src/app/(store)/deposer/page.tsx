@@ -10,22 +10,30 @@ import { Textarea } from "@/components/ui/textarea"
 import { useAuthGuard } from "@/hooks/use-auth-guard"
 import { createClient } from "@/lib/supabase/client"
 
-const categories = [
-  "Mode", "Maison", "High-tech", "Téléphones", "Jeux vidéo",
-  "Sports et loisirs", "Beauté", "Livres", "Jouets", "Autre",
-]
+const categories = ["Mode", "Maison", "High-tech", "Téléphones", "Jeux vidéo", "Sports et loisirs", "Beauté", "Livres", "Jouets", "Autre"]
 
 export default function DeposerPage() {
   const router = useRouter()
   const { user, isReady } = useAuthGuard()
-  const [form, setForm] = useState({
-    title: "", description: "", price: "", category: "Mode",
-    item_condition: "good", location: "", image_url: "",
-  })
+  const [form, setForm] = useState({ title: "", description: "", price: "", category: "Mode", item_condition: "good", location: "" })
+  const [images, setImages] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
 
   function update(field: string, value: string) {
     setForm((current) => ({ ...current, [field]: value }))
+  }
+
+  function selectImages(files: FileList | null) {
+    const selected = Array.from(files ?? [])
+    if (selected.length > 5) {
+      toast.error("Tu peux ajouter jusqu'à 5 photos.")
+      return
+    }
+    if (selected.some((file) => !file.type.startsWith("image/") || file.size > 5 * 1024 * 1024)) {
+      toast.error("Chaque photo doit être une image de 5 Mo maximum.")
+      return
+    }
+    setImages(selected)
   }
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
@@ -37,26 +45,36 @@ export default function DeposerPage() {
       return
     }
     setLoading(true)
-    const imageUrls = form.image_url.trim() ? [form.image_url.trim()] : []
-    const { error } = await createClient().from("listings").insert({
-      seller_id: user.id,
-      title: form.title.trim(),
-      description: form.description.trim(),
-      price,
-      category: form.category,
-      item_condition: form.item_condition,
-      location: form.location.trim() || null,
-      image_urls: imageUrls,
-      status: "active",
-    })
-    setLoading(false)
-    if (error) {
-      toast.error("L'annonce n'a pas pu être publiée. Réessaie dans un instant.")
-      return
+    const supabase = createClient()
+    const imageUrls: string[] = []
+    try {
+      for (const file of images) {
+        const extension = file.name.split(".").pop()?.toLowerCase() || "jpg"
+        const path = `${user.id}/${crypto.randomUUID()}.${extension}`
+        const { error: uploadError } = await supabase.storage.from("listing-images").upload(path, file, { contentType: file.type, upsert: false })
+        if (uploadError) throw uploadError
+        imageUrls.push(supabase.storage.from("listing-images").getPublicUrl(path).data.publicUrl)
+      }
+      const { error } = await supabase.from("listings").insert({
+        seller_id: user.id,
+        title: form.title.trim(),
+        description: form.description.trim(),
+        price,
+        category: form.category,
+        item_condition: form.item_condition,
+        location: form.location.trim() || null,
+        image_urls: imageUrls,
+        status: "active",
+      })
+      if (error) throw error
+      toast.success("Ton annonce est publiée sur GoWill !")
+      router.push("/annonces")
+      router.refresh()
+    } catch {
+      toast.error("La publication a échoué. Vérifie les photos et réessaie.")
+    } finally {
+      setLoading(false)
     }
-    toast.success("Ton annonce est publiée sur GoWill !")
-    router.push("/annonces")
-    router.refresh()
   }
 
   if (!isReady) return <div className="mx-auto max-w-2xl px-4 py-20 text-center">Chargement de ton espace...</div>
@@ -91,22 +109,18 @@ export default function DeposerPage() {
           <div className="space-y-2">
             <Label htmlFor="item_condition">État du produit</Label>
             <select id="item_condition" value={form.item_condition} onChange={(e) => update("item_condition", e.target.value)} className="h-10 w-full rounded-md border bg-background px-3 text-sm">
-              <option value="new">Neuf</option>
-              <option value="like_new">Comme neuf</option>
-              <option value="good">Bon état</option>
-              <option value="fair">État correct</option>
-              <option value="for_parts">Pour pièces</option>
+              <option value="new">Neuf</option><option value="like_new">Comme neuf</option><option value="good">Bon état</option><option value="fair">État correct</option><option value="for_parts">Pour pièces</option>
             </select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="location">Ville (facultatif)</Label>
-            <Input id="location" maxLength={100} value={form.location} onChange={(e) => update("location", e.target.value)} placeholder="Ex. Pointe-à-Pitre" />
+            <Input id="location" maxLength={100} value={form.location} onChange={(e) => update("location", e.target.value)} placeholder="Ta ville" />
           </div>
         </div>
         <div className="space-y-2">
-          <Label htmlFor="image_url">Lien d'une photo (facultatif)</Label>
-          <Input id="image_url" type="url" value={form.image_url} onChange={(e) => update("image_url", e.target.value)} placeholder="https://..." />
-          <p className="text-xs text-muted-foreground">L'ajout direct de photos depuis ton appareil sera ajouté ensuite.</p>
+          <Label htmlFor="images">Photos (jusqu'à 5)</Label>
+          <input id="images" type="file" accept="image/*" multiple onChange={(e) => selectImages(e.target.files)} className="block w-full rounded-md border p-3 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-neutral-100 file:px-3 file:py-2" />
+          <p className="text-xs text-muted-foreground">{images.length} photo(s) sélectionnée(s), 5 Mo maximum par photo.</p>
         </div>
         <Button type="submit" className="w-full" disabled={loading}>{loading ? "Publication..." : "Publier mon annonce"}</Button>
       </form>
