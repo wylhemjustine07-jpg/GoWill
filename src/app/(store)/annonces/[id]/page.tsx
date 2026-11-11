@@ -92,7 +92,7 @@ export default function AnnonceDetailPage() {
         <p className="mt-4 text-2xl font-bold">{euro.format(Number(listing.price))}</p>
         <div className="mt-5 flex flex-wrap gap-2 text-sm text-muted-foreground">
           <span className="rounded-full bg-neutral-100 px-3 py-1">{conditionLabels[listing.item_condition] ?? "État non précisé"}</span>
-          {listing.location && <span className="rounded-full bg-neutral-100 px-3 py-1">{listing.location}</span>}
+          {listing.location && <span className="rounded-full bg-neutral-100 px-3 py-1">Expédié depuis : {listing.location}</span>}
         </div>
         <div className="mt-8 border-t pt-6">
           <h2 className="font-semibold">Description</h2>
