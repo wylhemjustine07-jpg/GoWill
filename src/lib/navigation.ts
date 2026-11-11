@@ -8,34 +8,29 @@ export interface NavSection {
   items: NavItem[]
 }
 
-// Single source of truth for all navigation across desktop header,
-// mobile menu, and anywhere else. Edit this one file to update all menus.
-
+// Navigation GoWill — catégories et espaces principaux.
 export const shopLinks: NavItem[] = [
-  { name: "Electronics", href: "/electronics" },
-  { name: "Clothing", href: "/clothing" },
-  { name: "Home & Kitchen", href: "/home-kitchen" },
-  { name: "Accessories", href: "/accessories" },
-  { name: "Food & Drink", href: "/food-drink" },
+  { name: "Toutes les annonces", href: "/annonces" },
+  { name: "Déposer une annonce", href: "/deposer" },
+  { name: "Mode", href: "/annonces?categorie=Mode" },
+  { name: "Maison", href: "/annonces?categorie=Maison" },
+  { name: "High-tech", href: "/annonces?categorie=High-tech" },
 ]
 
 export const accountLinks: NavItem[] = [
-  { name: "My Account", href: "/account" },
-  { name: "Wishlist", href: "/wishlist" },
-  { name: "Orders", href: "/account/orders" },
+  { name: "Mon compte", href: "/account" },
+  { name: "Favoris", href: "/wishlist" },
+  { name: "Commandes", href: "/account/orders" },
 ]
 
 export const infoLinks: NavItem[] = [
-  { name: "All Brands", href: "/brands" },
-  { name: "Blog", href: "/blog" },
-  { name: "Pages", href: "/pages" },
-  { name: "About", href: "/about" },
+  { name: "À propos", href: "/about" },
   { name: "Contact", href: "/contact" },
   { name: "FAQ", href: "/faq" },
 ]
 
 export const mobileMenuSections: NavSection[] = [
-  { label: "Shop", items: shopLinks },
-  { label: "Account", items: accountLinks },
-  { label: "Info", items: infoLinks },
+  { label: "Marketplace", items: shopLinks },
+  { label: "Mon espace", items: accountLinks },
+  { label: "Informations", items: infoLinks },
 ]
