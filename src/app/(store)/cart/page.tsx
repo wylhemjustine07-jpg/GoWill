@@ -9,6 +9,8 @@ import { EmptyState } from "@/components/ui/empty-state"
 import { useCartStore } from "@/store/cart"
 import { CartItem } from "@/components/cart/cart-item"
 import { CartSummary } from "@/components/cart/cart-summary"
+import { calculateCartShipping } from "@/lib/shipping"
+import { siteConfig } from "@/lib/config"
 import { useEffect, useState } from "react"
 
 export default function CartPage() {
@@ -41,6 +43,8 @@ export default function CartPage() {
   }
 
   const subtotal = getSubtotal()
+  const fallbackShipping = subtotal >= siteConfig.freeShippingThreshold ? 0 : 599
+  const shipping = calculateCartShipping(items, fallbackShipping)
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 pb-16 sm:px-6 sm:py-16 lg:px-8">
@@ -52,7 +56,7 @@ export default function CartPage() {
           ))}
         </div>
         <Separator className="my-6" />
-        <CartSummary subtotal={subtotal} />
+        <CartSummary subtotal={subtotal} shipping={shipping} />
         <div className="mt-8 flex flex-col gap-3">
           <Button size="lg" asChild>
             <Link href="/checkout">Proceed to Checkout</Link>
