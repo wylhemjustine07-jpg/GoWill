@@ -15,7 +15,7 @@ const categories = ["Mode", "Maison", "High-tech", "Téléphones", "Jeux vidéo"
 export default function DeposerPage() {
   const router = useRouter()
   const { user, isReady } = useAuthGuard()
-  const [form, setForm] = useState({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "", shippingFee: "0", shippingFeePayer: "buyer" as "buyer" | "seller" | "split", shipsInternationally: true })
+  const [form, setForm] = useState({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "", shippingFee: "", shippingFeePayer: "buyer" as "buyer" | "seller" | "split", shipsInternationally: true })
   const [images, setImages] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -49,7 +49,7 @@ export default function DeposerPage() {
       return
     }
     const shippingFeeAmount = Number(form.shippingFee.replace(",", "."))
-    if (!Number.isFinite(shippingFeeAmount) || shippingFeeAmount < 0) {
+    if (!form.shippingFee.trim() || !Number.isFinite(shippingFeeAmount) || shippingFeeAmount < 0) {
       toast.error("Indique une estimation de frais d'expédition valide.")
       return
     }
@@ -134,7 +134,7 @@ export default function DeposerPage() {
           </div>
           <div className="space-y-2">
             <Label htmlFor="shippingFee">Frais d'expédition estimés (€)</Label>
-            <Input id="shippingFee" type="number" min="0" step="0.01" value={form.shippingFee} onChange={(e) => update("shippingFee", e.target.value)} required />
+            <Input id="shippingFee" type="number" min="0" step="0.01" value={form.shippingFee} onChange={(e) => update("shippingFee", e.target.value)} placeholder="0,00" required />
             <p className="text-xs text-muted-foreground">Indique ton estimation en euros. 0 signifie que tu offres l'expédition.</p>
           </div>
           <div className="space-y-2">
