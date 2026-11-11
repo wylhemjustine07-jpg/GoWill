@@ -18,15 +18,15 @@ export function CartSummary({ subtotal, shipping: providedShipping }: CartSummar
   return (
     <div className="space-y-3">
       <div className="flex justify-between text-sm">
-        <span className="text-muted-foreground">Subtotal</span>
+        <span className="text-muted-foreground">Sous-total</span>
         <span>{formatPrice(subtotal)}</span>
       </div>
       <div className="flex justify-between text-sm">
-        <span className="text-muted-foreground">{hasCustomShipping ? "Estimated shipping" : "Shipping"}</span>
-        <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
+        <span className="text-muted-foreground">{hasCustomShipping ? "Livraison estimée" : "Livraison"}</span>
+        <span>{shipping === 0 ? "Offerte" : formatPrice(shipping)}</span>
       </div>
       <div className="flex justify-between text-sm">
-        <span className="text-muted-foreground">Estimated tax</span>
+        <span className="text-muted-foreground">Taxes estimées</span>
         <span>{formatPrice(tax)}</span>
       </div>
       <Separator />
@@ -36,7 +36,7 @@ export function CartSummary({ subtotal, shipping: providedShipping }: CartSummar
       </div>
       {!hasCustomShipping && subtotal > 0 && subtotal < siteConfig.freeShippingThreshold && (
         <p className="text-xs text-muted-foreground">
-          Add {formatPrice(siteConfig.freeShippingThreshold - subtotal)} more for free shipping
+          Ajoute encore {formatPrice(siteConfig.freeShippingThreshold - subtotal)} pour bénéficier de la livraison offerte
         </p>
       )}
     </div>
