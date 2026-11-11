@@ -12,10 +12,10 @@ import { useAuthStore } from "@/store/auth"
 const accountLinks = [
   { name: "Mes annonces", description: "Gérer les produits que tu as publiés", href: "/account/annonces", icon: Store },
   { name: "Mes messages", description: "Discuter avec les acheteurs et les vendeurs", href: "/messages", icon: MessageCircle },
-  { name: "Orders", description: "View your order history and track shipments", href: "/account/orders", icon: Package },
-  { name: "Addresses", description: "Manage your shipping and billing addresses", href: "/account/addresses", icon: MapPin },
-  { name: "Wishlist", description: "Products you've saved for later", href: "/wishlist", icon: Heart },
-  { name: "Settings", description: "Update your profile and preferences", href: "/account/settings", icon: Settings },
+  { name: "Mes commandes", description: "Consulter tes commandes et leur suivi", href: "/account/orders", icon: Package },
+  { name: "Mes adresses", description: "Enregistrer et gérer tes adresses", href: "/account/addresses", icon: MapPin },
+  { name: "Mes favoris", description: "Retrouver les annonces mises de côté", href: "/wishlist", icon: Heart },
+  { name: "Paramètres", description: "Modifier ton profil et ton mot de passe", href: "/account/settings", icon: Settings },
 ]
 
 export default function AccountPage() {
