@@ -18,6 +18,11 @@ interface CartState {
     slug: string
     price: number
     quantity?: number
+    sellerId?: string
+    shippingOrigin?: string | null
+    shippingFeeAmount?: number
+    shippingFeePayer?: "buyer" | "seller" | "split"
+    shipsInternationally?: boolean
   }) => void
   removeItem: (variantId: string) => void
   updateQuantity: (variantId: string, quantity: number) => void
@@ -49,6 +54,11 @@ export const useCartStore = create<CartState>()(
                 i.variantId === item.variantId
                   ? {
                       ...i,
+                      sellerId: item.sellerId ?? i.sellerId,
+                      shippingOrigin: item.shippingOrigin ?? i.shippingOrigin,
+                      shippingFeeAmount: item.shippingFeeAmount ?? i.shippingFeeAmount,
+                      shippingFeePayer: item.shippingFeePayer ?? i.shippingFeePayer,
+                      shipsInternationally: item.shipsInternationally ?? i.shipsInternationally,
                       quantity: i.quantity + (item.quantity ?? 1),
                       lineTotal: i.price * (i.quantity + (item.quantity ?? 1)),
                     }
@@ -69,6 +79,11 @@ export const useCartStore = create<CartState>()(
             price: item.price,
             quantity,
             lineTotal: item.price * quantity,
+            sellerId: item.sellerId,
+            shippingOrigin: item.shippingOrigin,
+            shippingFeeAmount: item.shippingFeeAmount,
+            shippingFeePayer: item.shippingFeePayer,
+            shipsInternationally: item.shipsInternationally,
           }
 
           return { items: [...state.items, newItem] }
