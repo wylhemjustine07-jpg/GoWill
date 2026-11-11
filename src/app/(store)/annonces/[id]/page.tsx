@@ -9,6 +9,7 @@ import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 import { FavoriteButton } from "@/components/listings/favorite-button"
+import { BuyListingButton } from "@/components/listings/buy-listing-button"
 import { useAuthStore } from "@/store/auth"
 
 type Listing = {
@@ -98,10 +99,17 @@ export default function AnnonceDetailPage() {
           <p className="mt-3 whitespace-pre-wrap text-sm leading-7 text-muted-foreground">{listing.description}</p>
         </div>
         <div className="mt-8">
-          {currentUser?.id === listing.seller_id ? <Button asChild variant="outline" className="w-full"><Link href="/account/annonces">Gérer mon annonce</Link></Button> : <Button onClick={() => void contactSeller()} disabled={contacting} className="w-full">
-            <MessageCircle className="mr-2 h-4 w-4" />{contacting ? "Ouverture..." : "Contacter le vendeur"}
-          </Button>}
-          <p className="mt-3 text-center text-xs text-muted-foreground">Échange directement avec le vendeur grâce à la messagerie GoWill.</p>
+          {currentUser?.id === listing.seller_id ? (
+            <Button asChild variant="outline" className="w-full"><Link href="/account/annonces">Gérer mon annonce</Link></Button>
+          ) : (
+            <div className="space-y-3">
+              <BuyListingButton listing={listing} className="w-full" size="lg" />
+              <Button onClick={() => void contactSeller()} disabled={contacting} variant="outline" className="w-full">
+                <MessageCircle className="mr-2 h-4 w-4" />{contacting ? "Ouverture..." : "Contacter le vendeur"}
+              </Button>
+            </div>
+          )}
+          <p className="mt-3 text-center text-xs text-muted-foreground">Ajoute l'article à ton panier pour passer à l'étape de livraison, ou contacte le vendeur pour poser une question.</p>
         </div>
       </div>
     </section>
