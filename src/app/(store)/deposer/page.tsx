@@ -15,7 +15,7 @@ const categories = ["Mode", "Maison", "High-tech", "Téléphones", "Jeux vidéo"
 export default function DeposerPage() {
   const router = useRouter()
   const { user, isReady } = useAuthGuard()
-  const [form, setForm] = useState({ title: "", description: "", price: "", category: "Mode", item_condition: "good", location: "" })
+  const [form, setForm] = useState({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "" })
   const [images, setImages] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -44,6 +44,10 @@ export default function DeposerPage() {
       toast.error("Indique un prix valide.")
       return
     }
+    if (!form.shippingCity.trim() || !form.shippingCountry.trim()) {
+      toast.error("Indique la ville et le pays depuis lesquels tu expédies l'article.")
+      return
+    }
     setLoading(true)
     const supabase = createClient()
     const imageUrls: string[] = []
@@ -62,7 +66,7 @@ export default function DeposerPage() {
         price,
         category: form.category,
         item_condition: form.item_condition,
-        location: form.location.trim() || null,
+        location: `${form.shippingCity.trim()}, ${form.shippingCountry.trim()}`,
         image_urls: imageUrls,
         status: "active",
       })
@@ -84,7 +88,7 @@ export default function DeposerPage() {
       <div className="mb-8">
         <p className="text-sm font-semibold text-violet-700">Espace vendeur</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Déposer une annonce</h1>
-        <p className="mt-2 text-muted-foreground">Présente clairement ton produit pour aider les acheteurs à le trouver.</p>
+        <p className="mt-2 text-muted-foreground">Présente ton produit et indique le pays depuis lequel tu l'expédieras pour les acheteurs du monde entier.</p>
       </div>
       <form onSubmit={submit} className="space-y-5 rounded-2xl border bg-white p-5 shadow-sm sm:p-7">
         <div className="space-y-2">
@@ -113,8 +117,12 @@ export default function DeposerPage() {
             </select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="location">Ville (facultatif)</Label>
-            <Input id="location" maxLength={100} value={form.location} onChange={(e) => update("location", e.target.value)} placeholder="Ta ville" />
+            <Label htmlFor="shippingCity">Ville d'expédition</Label>
+            <Input id="shippingCity" maxLength={100} value={form.shippingCity} onChange={(e) => update("shippingCity", e.target.value)} placeholder="Ex. Tokyo" autoComplete="address-level2" required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="shippingCountry">Pays d'expédition</Label>
+            <Input id="shippingCountry" maxLength={80} value={form.shippingCountry} onChange={(e) => update("shippingCountry", e.target.value)} placeholder="Ex. Japon, France, Canada..." autoComplete="country-name" required />
           </div>
         </div>
         <div className="space-y-2">
