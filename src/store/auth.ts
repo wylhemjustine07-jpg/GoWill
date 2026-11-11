@@ -9,7 +9,7 @@ interface AuthState {
   user: User | null
   isAuthenticated: boolean
   isLoading: boolean
-  initialize: () => () => void
+  initialize: () => void
   login: (email: string, password: string) => Promise<boolean>
   register: (data: { firstName: string; lastName: string; email: string; password: string }) => Promise<{ success: boolean; needsEmailConfirmation: boolean }>
   logout: () => void
@@ -42,7 +42,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   isLoading: true,
 
   initialize: () => {
-    if (unsubscribe) return unsubscribe
+    if (unsubscribe) return
     const supabase = createClient()
     const sync = (session: Session | null) => set({
       user: session?.user ? mapUser(session.user) : null,
@@ -50,15 +50,11 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       isLoading: false,
     })
     const { data } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session) => sync(session))
-    unsubscribe = () => {
-      data.subscription.unsubscribe()
-      unsubscribe = null
-      initializationPromise = null
-    }
+    unsubscribe = () => data.subscription.unsubscribe()
     if (!initializationPromise) {
       initializationPromise = supabase.auth.getSession().then(({ data: sessionData }) => sync(sessionData.session))
     }
-    return unsubscribe
+    // Keep one subscription alive for the lifetime of the browser app.
   },
 
   login: async (email, password) => {
