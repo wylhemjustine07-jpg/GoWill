@@ -70,7 +70,7 @@ export default function ModifierAnnoncePage() {
       <div className="mb-8"><p className="text-sm font-semibold text-violet-700">Espace vendeur</p><h1 className="mt-2 text-3xl font-bold tracking-tight">Modifier mon annonce</h1><p className="mt-2 text-sm text-muted-foreground">Les photos déjà publiées sont conservées.</p></div>
       <form onSubmit={submit} className="space-y-5 rounded-2xl border bg-white p-5 shadow-sm sm:p-7">
         <div className="space-y-2"><Label htmlFor="title">Titre de l'annonce</Label><Input id="title" minLength={3} maxLength={120} value={form.title} onChange={(e) => update("title", e.target.value)} required /></div>
-        <div className="space-y-2"><Label htmlFor="description">Description</Label><Textarea id="description" minLength={10} maxLength={5000} rows={6} value={form.description} onChange={(e) => update("description", e.target.value)} required /></div>
+        <div className="space-y-2"><Label htmlFor="description">Description</Label><Textarea id="description" maxLength={5000} rows={6} value={form.description} onChange={(e) => update("description", e.target.value)} required /></div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2"><Label htmlFor="price">Prix (€)</Label><Input id="price" type="number" min="0" step="0.01" value={form.price} onChange={(e) => update("price", e.target.value)} required /></div>
           <div className="space-y-2"><Label htmlFor="category">Catégorie</Label><select id="category" value={form.category} onChange={(e) => update("category", e.target.value)} className="h-10 w-full rounded-md border bg-background px-3 text-sm">{categories.map((category) => <option key={category}>{category}</option>)}</select></div>
