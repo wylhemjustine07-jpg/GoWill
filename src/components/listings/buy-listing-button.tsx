@@ -15,6 +15,10 @@ interface BuyListingButtonProps {
     price: number
     image_urls: string[] | null
     seller_id: string
+    location: string | null
+    shipping_fee_amount: number
+    shipping_fee_payer: "buyer" | "seller" | "split"
+    ships_internationally: boolean
   }
   className?: string
   size?: "default" | "sm" | "lg"
@@ -54,6 +58,11 @@ export function BuyListingButton({ listing, className, size = "default" }: BuyLi
         // Les annonces GoWill sont enregistrées en euros, le panier utilise les centimes.
         price: Math.round(Number(listing.price) * 100),
         quantity: 1,
+        sellerId: listing.seller_id,
+        shippingOrigin: listing.location,
+        shippingFeeAmount: Math.round(Number(listing.shipping_fee_amount ?? 0) * 100),
+        shippingFeePayer: listing.shipping_fee_payer ?? "buyer",
+        shipsInternationally: listing.ships_internationally ?? true,
       })
 
       router.push("/checkout")
