@@ -6,10 +6,12 @@ import { siteConfig } from "@/lib/config"
 
 interface CartSummaryProps {
   subtotal: number
+  shipping?: number
 }
 
-export function CartSummary({ subtotal }: CartSummaryProps) {
-  const shipping = subtotal >= siteConfig.freeShippingThreshold ? 0 : 599
+export function CartSummary({ subtotal, shipping: providedShipping }: CartSummaryProps) {
+  const hasCustomShipping = providedShipping !== undefined
+  const shipping = providedShipping ?? (subtotal >= siteConfig.freeShippingThreshold ? 0 : 599)
   const tax = Math.round(subtotal * siteConfig.taxRate)
   const total = subtotal + shipping + tax
 
@@ -20,7 +22,7 @@ export function CartSummary({ subtotal }: CartSummaryProps) {
         <span>{formatPrice(subtotal)}</span>
       </div>
       <div className="flex justify-between text-sm">
-        <span className="text-muted-foreground">Shipping</span>
+        <span className="text-muted-foreground">{hasCustomShipping ? "Estimated shipping" : "Shipping"}</span>
         <span>{shipping === 0 ? "Free" : formatPrice(shipping)}</span>
       </div>
       <div className="flex justify-between text-sm">
@@ -32,7 +34,7 @@ export function CartSummary({ subtotal }: CartSummaryProps) {
         <span>Total</span>
         <span>{formatPrice(total)}</span>
       </div>
-      {subtotal > 0 && subtotal < siteConfig.freeShippingThreshold && (
+      {!hasCustomShipping && subtotal > 0 && subtotal < siteConfig.freeShippingThreshold && (
         <p className="text-xs text-muted-foreground">
           Add {formatPrice(siteConfig.freeShippingThreshold - subtotal)} more for free shipping
         </p>
