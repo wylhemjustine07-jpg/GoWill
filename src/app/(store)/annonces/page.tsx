@@ -72,7 +72,7 @@ export default function AnnoncesPage() {
                   <p className="text-xs text-violet-700">{listing.category}</p>
                   <h2 className="mt-1 line-clamp-2 text-sm font-medium">{listing.title}</h2>
                   <p className="mt-2 font-bold">{euro.format(Number(listing.price))}</p>
-                  {listing.location && <p className="mt-1 truncate text-xs text-muted-foreground">{listing.location}</p>}
+                  {listing.location && <p className="mt-1 truncate text-xs text-muted-foreground">Expédié depuis : {listing.location}</p>}
                 </div>
               </Link>
               <div className="px-3 pb-3"><BuyListingButton listing={listing} className="w-full" size="sm" /></div>
