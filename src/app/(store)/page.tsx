@@ -44,7 +44,7 @@ export default async function HomePage() {
           </p>
           <div className="mt-9 flex w-full flex-col justify-center gap-3 sm:w-auto sm:flex-row">
             <Button size="lg" asChild>
-              <Link href="/shop">
+              <Link href="/annonces">
                 <ShoppingBag className="mr-2 h-4 w-4" />
                 Explorer les annonces
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -69,7 +69,7 @@ export default async function HomePage() {
             <p className="text-sm font-medium text-violet-700">À découvrir</p>
             <h2 className="mt-1 text-2xl font-bold tracking-tight">Explorer par catégorie</h2>
           </div>
-          <Link href="/shop" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+          <Link href="/annonces" className="text-sm font-medium text-muted-foreground hover:text-foreground">
             Tout voir
           </Link>
         </div>
@@ -99,7 +99,7 @@ export default async function HomePage() {
             <p className="text-sm font-medium text-violet-700">Sélection GoWill</p>
             <h2 className="mt-1 text-2xl font-bold tracking-tight">Annonces à découvrir</h2>
           </div>
-          <Link href="/shop" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+          <Link href="/annonces" className="text-sm font-medium text-muted-foreground hover:text-foreground">
             Voir toutes les annonces
           </Link>
         </div>
