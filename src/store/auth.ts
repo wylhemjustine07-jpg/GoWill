@@ -83,10 +83,25 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     set({ user: null, isAuthenticated: false, isLoading: false })
   },
 
-  updateProfile: (data) => {
+  updateProfile: async (data) => {
     const user = get().user
-    if (!user) return
-    set({ user: { ...user, ...data, updatedAt: new Date().toISOString() } })
+    if (!user) return false
+    const firstName = data.firstName ?? user.firstName
+    const lastName = data.lastName ?? user.lastName
+    const displayName = `${firstName} ${lastName}`.trim()
+    const supabase = createClient()
+    const { error: profileError } = await supabase.from("profiles").upsert({
+      id: user.id,
+      display_name: displayName,
+      updated_at: new Date().toISOString(),
+    })
+    if (profileError) return false
+    const { data: updated, error } = await supabase.auth.updateUser({
+      data: { first_name: firstName, last_name: lastName, full_name: displayName },
+    })
+    if (error || !updated.user) return false
+    set({ user: mapUser(updated.user) })
+    return true
   },
 
   addAddress: (address) => {
