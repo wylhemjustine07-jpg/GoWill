@@ -1,52 +1,28 @@
-// ============================================================================
-// Store Configuration — Single source of truth for all store-wide settings.
-// Edit this file to customize the store name, contact info, social links, etc.
-// ============================================================================
-
+// GoWill — configuration générale du site
 export const siteConfig = {
-  // Branding
-  name: "Next.js Ecommerce Starter",
-  tagline: "A free, open-source Next.js ecommerce template.",
+  name: "GoWill",
+  tagline: "La marketplace où chacun peut acheter et vendre.",
   description:
-    "A free, production-ready Next.js ecommerce starter template built with Tailwind CSS and shadcn/ui. Responsive, accessible, SEO optimized, and ready to connect to any checkout system. Built by Epic Design Labs.",
-
-  // Announcement bar (set to "" to hide)
-  announcement: "Free shipping on all orders over $75 — Shop now!",
-
-  // URLs
+    "GoWill réunit acheteurs et vendeurs autour d'une marketplace simple, pratique et ouverte à de nombreuses catégories de produits.",
+  announcement: "Bienvenue sur GoWill — découvrez les annonces de la communauté.",
   url: process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000",
-
-  // Contact
   contact: {
-    email: "support@epicdesignlabs.com",
+    email: "",
     phone: "",
-    address: {
-      street: "",
-      suite: "",
-      city: "",
-      state: "",
-      zip: "",
-    },
+    address: { street: "", suite: "", city: "", state: "", zip: "" },
   },
-
-  // Social links (set to "" to hide)
   social: {
-    twitter: "https://x.com/epicdesignlabs",
-    instagram: "https://instagram.com/epicdesignlabs",
-    facebook: "https://facebook.com/epicdesignlabs",
+    twitter: "",
+    instagram: "",
+    facebook: "",
     youtube: "",
     tiktok: "",
   },
-
-  // Shipping
-  freeShippingThreshold: 7500, // in cents ($75.00)
-  taxRate: 0.08, // 8%
-
-  // Currency & locale
-  currency: "USD",
-  locale: "en-US",
-
-  // Legal
+  // Paramètres conservés pour compatibilité avec le panier de démonstration.
+  freeShippingThreshold: 7500,
+  taxRate: 0,
+  currency: "EUR",
+  locale: "fr-FR",
   copyrightYear: new Date().getFullYear(),
 } as const
 
