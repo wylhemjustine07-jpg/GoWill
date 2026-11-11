@@ -15,6 +15,7 @@ import { CartSummary } from "@/components/cart/cart-summary"
 import { formatPrice } from "@/lib/utils"
 import { toast } from "sonner"
 import { siteConfig } from "@/lib/config"
+import { calculateCartShipping, getBuyerShippingShare, getOriginCountry, normalizeCountry } from "@/lib/shipping"
 import type { Order } from "@/types"
 
 type DeliveryMethod = "home" | "relay"
@@ -67,6 +68,8 @@ export default function CheckoutPage() {
   }
 
   const subtotal = getSubtotal()
+  const fallbackShipping = subtotal >= siteConfig.freeShippingThreshold ? 0 : 599
+  const shippingEstimate = calculateCartShipping(items, fallbackShipping)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
@@ -131,10 +134,20 @@ export default function CheckoutPage() {
       return
     }
 
+    const blockedListing = items.find((item) => {
+      if (!item.sellerId || item.shipsInternationally !== false) return false
+      const originCountry = getOriginCountry(item.shippingOrigin)
+      return originCountry !== "" && normalizeCountry(originCountry) !== normalizeCountry(form.country)
+    })
+    if (blockedListing) {
+      toast.error(`Le vendeur de « ${blockedListing.name} » n'autorise pas l'expédition vers ce pays.`)
+      return
+    }
+
     setLoading(true)
 
-    // Démonstration locale uniquement : aucun paiement ni transporteur réel n'est connecté.
-    const shipping = subtotal >= siteConfig.freeShippingThreshold ? 0 : 599
+    // Démonstration locale uniquement : les estimations vendeur ne sont pas des tarifs transporteur vérifiés.
+    const shipping = shippingEstimate
     const tax = Math.round(subtotal * siteConfig.taxRate)
     const total = subtotal + shipping + tax
     const orderId = `DEMO-${Date.now().toString(36).toUpperCase()}`
@@ -182,6 +195,11 @@ export default function CheckoutPage() {
         price: item.price,
         quantity: item.quantity,
         total: item.lineTotal,
+        sellerId: item.sellerId,
+        shippingOrigin: item.shippingOrigin,
+        shippingFeeAmount: item.shippingFeeAmount,
+        shippingFeePayer: item.shippingFeePayer,
+        shipsInternationally: item.shipsInternationally,
       })),
       status: "pending",
       paymentStatus: "pending",
@@ -189,7 +207,7 @@ export default function CheckoutPage() {
       tax,
       shipping,
       total,
-      currency: "USD",
+      currency: "EUR",
       shippingAddress: address,
       customerEmail: form.email,
       customerName: `${form.firstName} ${form.lastName}`,
@@ -277,12 +295,21 @@ export default function CheckoutPage() {
           <Card className="sticky top-24">
             <CardHeader><CardTitle className="text-lg">Récapitulatif</CardTitle></CardHeader>
             <CardContent className="space-y-4">
-              {items.map((item) => <div key={item.variantId} className="flex justify-between gap-3 text-sm"><span className="text-muted-foreground">{item.name} × {item.quantity}</span><span>{formatPrice(item.lineTotal)}</span></div>)}
+              {items.map((item) => {
+                const buyerShare = getBuyerShippingShare(item.shippingFeeAmount ?? 0, item.shippingFeePayer ?? "buyer")
+                return <div key={item.variantId} className="flex justify-between gap-3 text-sm">
+                  <div className="min-w-0">
+                    <span className="text-muted-foreground">{item.name} × {item.quantity}</span>
+                    {item.sellerId && <p className="mt-1 text-xs text-muted-foreground">Expédié depuis : {item.shippingOrigin || "Origine non renseignée"} · ta part estimée des frais : {formatPrice(buyerShare * item.quantity)}</p>}
+                  </div>
+                  <span>{formatPrice(item.lineTotal)}</span>
+                </div>
+              })}
               <Separator />
-              <CartSummary subtotal={subtotal} />
+              <CartSummary subtotal={subtotal} shipping={shippingEstimate} />
               <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground"><PackageCheck className="mr-2 inline h-4 w-4" />Mode choisi : {deliveryMethod === "home" ? "Livraison à domicile" : "Point relais"}</div>
               <Button type="submit" size="lg" className="w-full" disabled={loading}>{loading ? "Préparation..." : "Voir l'aperçu de commande"}</Button>
-              <p className="text-center text-xs text-muted-foreground">Démonstration locale, sans paiement réel.</p>
+              <p className="text-center text-xs text-muted-foreground">Les frais affichés sont des estimations saisies par les vendeurs, pas des tarifs confirmés par un transporteur.</p>
             </CardContent>
           </Card>
         </div>
