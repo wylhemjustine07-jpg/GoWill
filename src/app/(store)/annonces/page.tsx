@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useEffect, useState } from "react"
 import { Search } from "lucide-react"
 import { FavoriteButton } from "@/components/listings/favorite-button"
+import { BuyListingButton } from "@/components/listings/buy-listing-button"
 import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/client"
 
@@ -18,6 +19,7 @@ type Listing = {
   location: string | null
   image_urls: string[]
   created_at: string
+  seller_id: string
 }
 
 const euro = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" })
@@ -29,7 +31,7 @@ export default function AnnoncesPage() {
 
   useEffect(() => {
     let active = true
-    createClient().from("listings").select("id,title,description,price,category,item_condition,location,image_urls,created_at").eq("status", "active").order("created_at", { ascending: false }).limit(60)
+    createClient().from("listings").select("id,title,description,price,category,item_condition,location,image_urls,created_at,seller_id").eq("status", "active").order("created_at", { ascending: false }).limit(60)
       .then(({ data, error }) => {
         if (!active) return
         if (!error && data) setListings(data as Listing[])
@@ -73,6 +75,7 @@ export default function AnnoncesPage() {
                   {listing.location && <p className="mt-1 truncate text-xs text-muted-foreground">{listing.location}</p>}
                 </div>
               </Link>
+              <div className="px-3 pb-3"><BuyListingButton listing={listing} className="w-full" size="sm" /></div>
               <FavoriteButton listingId={listing.id} className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 shadow hover:bg-white" />
             </article>
           ))}
