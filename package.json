@@ -1,24 +1,15 @@
 {
-  "name": "nextjs-ecommerce-starter",
+  "name": "gowill",
   "version": "1.0.0",
-  "description": "A free, production-ready Next.js ecommerce starter template built with Tailwind CSS and shadcn/ui.",
-  "author": "Epic Design Labs <support@epicdesignlabs.com> (https://epicdesignlabs.com)",
+  "description": "GoWill — une marketplace communautaire pour acheter et vendre en ligne.",
+  "author": "GoWill",
   "license": "MIT",
-  "homepage": "https://github.com/Epic-Design-Labs/nextjs-ecommerce-starter",
+  "homepage": "https://github.com/wylhemjustine07-jpg/GoWill",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Epic-Design-Labs/nextjs-ecommerce-starter.git"
+    "url": "https://github.com/wylhemjustine07-jpg/GoWill.git"
   },
-  "keywords": [
-    "nextjs",
-    "ecommerce",
-    "starter",
-    "template",
-    "tailwindcss",
-    "shadcn-ui",
-    "react",
-    "typescript"
-  ],
+  "keywords": ["gowill", "marketplace", "classifieds", "nextjs", "ecommerce"],
   "private": true,
   "scripts": {
     "dev": "next dev",
