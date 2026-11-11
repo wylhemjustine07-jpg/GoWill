@@ -7,7 +7,7 @@ import { useAuthGuard } from "@/hooks/use-auth-guard"
 import { createClient } from "@/lib/supabase/client"
 import { Button } from "@/components/ui/button"
 
-type Listing = { id: string; title: string; price: number; status: "draft" | "active" | "sold" | "archived"; created_at: string; category: string; location: string | null }
+type Listing = { id: string; title: string; price: number; status: "draft" | "active" | "sold" | "archived"; created_at: string; category: string; location: string | null; shipping_fee_amount: number; shipping_fee_payer: "buyer" | "seller" | "split"; ships_internationally: boolean }
 const price = new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" })
 const statusLabel = { draft: "Brouillon", active: "En ligne", sold: "Vendu", archived: "Archivé" }
 
@@ -18,7 +18,7 @@ export default function MesAnnoncesPage() {
 
   const loadListings = useCallback(async () => {
     if (!user) return
-    const { data, error } = await createClient().from("listings").select("id,title,price,status,created_at,category,location").eq("seller_id", user.id).order("created_at", { ascending: false })
+    const { data, error } = await createClient().from("listings").select("id,title,price,status,created_at,category,location,shipping_fee_amount,shipping_fee_payer,ships_internationally").eq("seller_id", user.id).order("created_at", { ascending: false })
     if (error) toast.error("Impossible de charger tes annonces.")
     else setListings((data ?? []) as Listing[])
     setLoading(false)
@@ -52,7 +52,7 @@ export default function MesAnnoncesPage() {
         <div className="mt-8 space-y-3">
           {listings.map((listing) => (
             <article key={listing.id} className="flex flex-col gap-4 rounded-xl border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h2 className="font-semibold">{listing.title}</h2><span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs">{statusLabel[listing.status]}</span></div><p className="mt-1 text-sm text-muted-foreground">{listing.category} · {price.format(Number(listing.price))}</p>{listing.location && <p className="mt-1 text-xs text-muted-foreground">Expédition depuis : {listing.location}</p>}<p className="mt-1 text-xs text-muted-foreground">Publiée le {new Date(listing.created_at).toLocaleDateString("fr-FR")}</p></div>
+              <div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h2 className="font-semibold">{listing.title}</h2><span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs">{statusLabel[listing.status]}</span></div><p className="mt-1 text-sm text-muted-foreground">{listing.category} · {price.format(Number(listing.price))}</p>{listing.location && <p className="mt-1 text-xs text-muted-foreground">Expédition depuis : {listing.location}</p>}<p className="mt-1 text-xs text-muted-foreground">{Number(listing.shipping_fee_amount ?? 0) === 0 ? "Expédition offerte" : "Frais estimés : " + price.format(Number(listing.shipping_fee_amount))} · {listing.shipping_fee_payer === "seller" ? "à ta charge" : listing.shipping_fee_payer === "split" ? "partagés 50 / 50" : "à la charge de l'acheteur"}</p><p className="mt-1 text-xs text-muted-foreground">{listing.ships_internationally ? "International accepté" : "Pays du vendeur uniquement"}</p><p className="mt-1 text-xs text-muted-foreground">Publiée le {new Date(listing.created_at).toLocaleDateString("fr-FR")}</p></div>
               <div className="flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" asChild><Link href={`/account/annonces/${listing.id}/modifier`}>Modifier</Link></Button>
                 {listing.status === "active" ? <Button size="sm" variant="outline" onClick={() => void changeStatus(listing.id, "sold")}>Marquer vendu</Button> : listing.status === "sold" || listing.status === "archived" ? <Button size="sm" variant="outline" onClick={() => void changeStatus(listing.id, "active")}>Remettre en ligne</Button> : null}
