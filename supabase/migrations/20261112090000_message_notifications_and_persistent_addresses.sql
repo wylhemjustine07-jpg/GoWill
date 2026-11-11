@@ -1,4 +1,5 @@
 -- GoWill unread message tracking and persistent member addresses.
+revoke all on table public.conversations, public.messages from anon;
 alter table public.messages add column if not exists read_at timestamptz;
 grant update (read_at) on public.messages to authenticated;
 
