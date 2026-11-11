@@ -38,10 +38,14 @@ export function Header({ categories = [] }: HeaderProps) {
   const user = useAuthStore((s) => s.user)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const logout = useAuthStore((s) => s.logout)
+  const initializeAuth = useAuthStore((s) => s.initialize)
   const router = useRouter()
 
   const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    setMounted(true)
+    initializeAuth()
+  }, [initializeAuth])
   const itemCount = mounted ? getItemCount() : 0
 
   // Cmd+K / Ctrl+K to open search
