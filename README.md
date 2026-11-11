@@ -1,6 +1,6 @@
-# Next.js Ecommerce Starter
+# GoWill — Marketplace communautaire
 
-A free, open-source, production-ready ecommerce starter template built with **Next.js**, **Tailwind CSS**, and **shadcn/ui**. Designed to work standalone or connect to any checkout/payment system.
+GoWill est une marketplace communautaire construite avec **Next.js**, **Supabase**, **Tailwind CSS** et **shadcn/ui**. Les visiteurs peuvent consulter les annonces ; les membres peuvent créer un compte et publier leurs produits.
 
 **[Live Demo](https://nextjsecommercestarter.com)** · **[Documentation](docs/CUSTOMIZATION.md)** · **[Report Issue](https://github.com/Epic-Design-Labs/nextjs-ecommerce-starter/issues)**
 
@@ -37,7 +37,7 @@ Built by [Epic Design Labs](https://epicdesignlabs.com)
 - **Sonner** (toast notifications)
 - **Inter** (Google Font via next/font)
 
-## Quick Start
+## Configuration GoWill\n\nCopie `.env.example` vers `.env.local` à la racine du projet. Les variables Supabase publiques du projet GoWill sont déjà indiquées dans cet exemple. Ne place jamais de clé secrète Supabase dans une variable `NEXT_PUBLIC_`.\n\nLe schéma initial est dans `supabase/migrations/`. Il contient les profils, annonces, favoris et règles de sécurité RLS.\n\n## Fonctionnalités GoWill en cours\n\n- Accueil et navigation en français.\n- Consultation des annonces publiées depuis Supabase sur `/annonces`.\n- Détail d'une annonce sur `/annonces/[id]`.\n- Publication réservée aux membres connectés sur `/deposer`.\n- Authentification e-mail/mot de passe avec session persistante Supabase.\n- Profils et favoris dans la base de données.\n\nLes paiements, la messagerie, le téléversement de photos et le tableau de bord vendeur restent à construire.\n\n## Quick Start
 
 ```bash
 # Requires Node.js 20+
