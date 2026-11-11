@@ -201,6 +201,9 @@ export function Header({ categories = [] }: HeaderProps) {
                 <DropdownMenuItem onClick={() => router.push("/account")}>
                   {tCommon("signIn")}
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push("/messages")}>
+                  Mes messages
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => router.push("/account/orders")}>
                   {tCommon("orders")}
                 </DropdownMenuItem>
