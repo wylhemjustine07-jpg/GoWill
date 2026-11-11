@@ -4,6 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { Search } from "lucide-react"
+import { FavoriteButton } from "@/components/listings/favorite-button"
 import { Input } from "@/components/ui/input"
 import { createClient } from "@/lib/supabase/client"
 
@@ -60,17 +61,20 @@ export default function AnnoncesPage() {
         visible.length === 0 ? <div className="py-20 text-center"><h2 className="text-xl font-semibold">Aucune annonce pour le moment</h2><p className="mt-2 text-muted-foreground">Essaie une autre recherche ou publie la première annonce.</p></div> :
         <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {visible.map((listing) => (
-            <Link key={listing.id} href={`/annonces/${listing.id}`} className="group overflow-hidden rounded-xl border bg-white transition-shadow hover:shadow-md">
-              <div className="relative aspect-square bg-neutral-100">
-                {listing.image_urls?.[0] ? <Image src={listing.image_urls[0]} alt={listing.title} fill unoptimized className="object-cover transition-transform group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-4xl text-neutral-300">📦</div>}
-              </div>
-              <div className="p-3">
-                <p className="text-xs text-violet-700">{listing.category}</p>
-                <h2 className="mt-1 line-clamp-2 text-sm font-medium">{listing.title}</h2>
-                <p className="mt-2 font-bold">{euro.format(Number(listing.price))}</p>
-                {listing.location && <p className="mt-1 truncate text-xs text-muted-foreground">{listing.location}</p>}
-              </div>
-            </Link>
+            <article key={listing.id} className="group relative overflow-hidden rounded-xl border bg-white transition-shadow hover:shadow-md">
+              <Link href={`/annonces/${listing.id}`} className="block">
+                <div className="relative aspect-square bg-neutral-100">
+                  {listing.image_urls?.[0] ? <Image src={listing.image_urls[0]} alt={listing.title} fill unoptimized className="object-cover transition-transform group-hover:scale-105" /> : <div className="flex h-full items-center justify-center text-4xl text-neutral-300">📦</div>}
+                </div>
+                <div className="p-3">
+                  <p className="text-xs text-violet-700">{listing.category}</p>
+                  <h2 className="mt-1 line-clamp-2 text-sm font-medium">{listing.title}</h2>
+                  <p className="mt-2 font-bold">{euro.format(Number(listing.price))}</p>
+                  {listing.location && <p className="mt-1 truncate text-xs text-muted-foreground">{listing.location}</p>}
+                </div>
+              </Link>
+              <FavoriteButton listingId={listing.id} className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 shadow hover:bg-white" />
+            </article>
           ))}
         </div>
       }
