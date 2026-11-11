@@ -55,6 +55,7 @@ create table if not exists public.user_addresses (
 );
 create index if not exists user_addresses_user_idx on public.user_addresses(user_id, created_at desc);
 alter table public.user_addresses enable row level security;
+revoke all on table public.user_addresses from anon;
 grant select, insert, update, delete on public.user_addresses to authenticated;
 
 drop policy if exists "Users can view own addresses" on public.user_addresses;
