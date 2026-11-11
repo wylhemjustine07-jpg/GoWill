@@ -74,8 +74,8 @@ export default function CheckoutPage() {
 
   async function locatePostalCode() {
     const postalCode = form.relayPostalCode.trim()
-    if (!/^\d{5}$/.test(postalCode)) {
-      toast.error("Entre un code postal français à 5 chiffres.")
+    if (!postalCode || !form.country.trim()) {
+      toast.error("Indique le code postal et le pays du point relais.")
       return
     }
 
@@ -83,7 +83,7 @@ export default function CheckoutPage() {
     try {
       const params = new URLSearchParams({
         postalcode: postalCode,
-        country: "France",
+        country: form.country.trim(),
         format: "jsonv2",
         limit: "1",
       })
@@ -91,7 +91,7 @@ export default function CheckoutPage() {
       if (!response.ok) throw new Error("Geocoding unavailable")
       const results = (await response.json()) as Array<{ lat: string; lon: string; display_name?: string }>
       if (!results.length) {
-        toast.error("Aucune commune trouvée pour ce code postal.")
+        toast.error("Aucune zone trouvée. Vérifie le code postal et le pays.")
         setMapPosition(null)
         return
       }
@@ -208,7 +208,7 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold tracking-tight">Choisir la livraison</h1>
-      <p className="mt-2 text-sm text-muted-foreground">Indique où tu souhaites recevoir ton colis avant de vérifier ta commande.</p>
+      <p className="mt-2 text-sm text-muted-foreground">GoWill est conçu pour des achats entre pays. Indique le pays et l'adresse de destination ; les transporteurs et tarifs internationaux réels ne sont pas encore connectés.</p>
 
       <form onSubmit={handleSubmit} className="mt-8 grid gap-8 lg:grid-cols-5">
         <div className="space-y-8 lg:col-span-3">
@@ -243,16 +243,16 @@ export default function CheckoutPage() {
                   <div className="space-y-2"><Label htmlFor="line1">Adresse</Label><Input id="line1" name="line1" value={form.line1} onChange={handleChange} placeholder="Numéro et nom de rue" required /></div>
                   <div className="space-y-2"><Label htmlFor="line2">Complément (facultatif)</Label><Input id="line2" name="line2" value={form.line2} onChange={handleChange} placeholder="Appartement, bâtiment..." /></div>
                   <div className="grid gap-4 sm:grid-cols-3">
-                    <div className="space-y-2"><Label htmlFor="postalCode">Code postal</Label><Input id="postalCode" name="postalCode" value={form.postalCode} onChange={handleChange} required /></div>
+                    <div className="space-y-2"><Label htmlFor="postalCode">Code postal</Label><Input id="postalCode" name="postalCode" autoComplete="postal-code" value={form.postalCode} onChange={handleChange} required /></div>
                     <div className="space-y-2 sm:col-span-2"><Label htmlFor="city">Ville</Label><Input id="city" name="city" value={form.city} onChange={handleChange} required /></div>
                   </div>
-                  <div className="space-y-2"><Label htmlFor="country">Pays</Label><Input id="country" name="country" value={form.country} onChange={handleChange} required /></div>
+                  <div className="space-y-2"><Label htmlFor="country">Pays de destination</Label><Input id="country" name="country" autoComplete="country-name" value={form.country} onChange={handleChange} placeholder="Ex. Guadeloupe, France, Japon, Canada..." required /><p className="text-xs text-muted-foreground">Saisis le pays ou territoire où le colis doit être livré.</p></div>
                 </div>
               ) : (
                 <div className="space-y-4 border-t pt-4">
-                  <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">Entre le code postal pour afficher la zone sur la carte, puis indique le relais que tu souhaites sélectionner.</div>
+                  <div className="rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">Entre le code postal et le pays pour afficher la zone sur la carte, puis indique manuellement le point relais souhaité. Les formats de codes postaux varient selon les pays.</div>
                   <div className="space-y-2"><Label htmlFor="relayPostalCode">Code postal du point relais</Label>
-                    <div className="flex gap-2"><Input id="relayPostalCode" name="relayPostalCode" inputMode="numeric" maxLength={5} value={form.relayPostalCode} onChange={handleChange} placeholder="Ex. 75001" /><Button type="button" variant="outline" onClick={() => void locatePostalCode()} disabled={postalSearching}><Search className="mr-2 h-4 w-4" />{postalSearching ? "Recherche..." : "Localiser"}</Button></div>
+                    <div className="flex gap-2"><Input id="relayPostalCode" name="relayPostalCode" autoComplete="postal-code" value={form.relayPostalCode} onChange={handleChange} placeholder="Code postal local" /><Button type="button" variant="outline" onClick={() => void locatePostalCode()} disabled={postalSearching}><Search className="mr-2 h-4 w-4" />{postalSearching ? "Recherche..." : "Localiser"}</Button></div>
                   </div>
                   {mapUrl && <div className="overflow-hidden rounded-xl border"><iframe title="Carte de la zone du point relais" src={mapUrl} className="h-64 w-full" loading="lazy" referrerPolicy="no-referrer-when-downgrade" /><p className="border-t px-3 py-2 text-xs text-muted-foreground">La carte localise le code postal, pas les points relais disponibles.</p></div>}
                   <div className="space-y-2"><Label htmlFor="relayName">Nom du point relais</Label><Input id="relayName" name="relayName" value={form.relayName} onChange={handleChange} placeholder="Nom du commerce ou du relais" required /></div>
@@ -261,7 +261,7 @@ export default function CheckoutPage() {
                     <div className="space-y-2"><Label htmlFor="relayCity">Ville</Label><Input id="relayCity" name="relayCity" value={form.relayCity} onChange={handleChange} required /></div>
                     <div className="space-y-2"><Label htmlFor="relayPostalCode2">Code postal</Label><Input id="relayPostalCode2" name="relayPostalCode" value={form.relayPostalCode} onChange={handleChange} required /></div>
                   </div>
-                  <p className="text-xs text-amber-700">Prototype : la liste officielle des relais et leur disponibilité seront connectées à un transporteur dans une prochaine étape. Vérifie le relais auprès du transporteur avant toute utilisation réelle.</p>
+                  <p className="text-xs text-amber-700">Prototype international : la carte indique uniquement la zone du code postal. Le nom et l'adresse du relais sont saisis manuellement ; aucune liste officielle, disponibilité, étiquette ou expédition de transporteur n'est encore connectée. Vérifie le relais auprès du transporteur avant toute utilisation réelle.</p>
                 </div>
               )}
             </CardContent>
@@ -269,7 +269,7 @@ export default function CheckoutPage() {
 
           <Card>
             <CardHeader><CardTitle className="text-lg">Paiement</CardTitle></CardHeader>
-            <CardContent><p className="text-sm text-muted-foreground">GoWill est actuellement en mode démonstration. Aucun paiement réel ne sera effectué et aucune expédition ne sera déclenchée.</p></CardContent>
+            <CardContent><p className="text-sm text-muted-foreground">GoWill est actuellement en mode démonstration. Les taxes, droits de douane, conversions de devises et frais de transport internationaux ne sont pas calculés. Aucun paiement réel ne sera effectué et aucune expédition ne sera déclenchée.</p></CardContent>
           </Card>
         </div>
 
