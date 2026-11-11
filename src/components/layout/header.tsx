@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { Search, ShoppingBag, User, Menu, Heart, LogOut, ChevronDown } from "lucide-react"
+import { Search, ShoppingBag, User, Menu, Heart, LogOut, ChevronDown, Bell } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   DropdownMenu,
@@ -20,6 +20,7 @@ import type { Category } from "@/types"
 import { useCartStore } from "@/store/cart"
 import { useAuthStore } from "@/store/auth"
 import { useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
 
 interface HeaderProps {
   /** All categories (top-level + subcategories) from the repository layer */
@@ -42,11 +43,37 @@ export function Header({ categories = [] }: HeaderProps) {
   const router = useRouter()
 
   const [mounted, setMounted] = useState(false)
+  const [unreadCount, setUnreadCount] = useState(0)
   useEffect(() => {
     setMounted(true)
     initializeAuth()
   }, [initializeAuth])
   const itemCount = mounted ? getItemCount() : 0
+
+  useEffect(() => {
+    if (!mounted || !isAuthenticated || !user?.id) {
+      setUnreadCount(0)
+      return
+    }
+    const supabase = createClient()
+    let active = true
+    const refreshUnread = async () => {
+      const { count, error } = await supabase
+        .from("messages")
+        .select("id", { count: "exact", head: true })
+        .neq("sender_id", user.id)
+        .is("read_at", null)
+      if (active && !error) setUnreadCount(count ?? 0)
+    }
+    void refreshUnread()
+    const channel = supabase.channel(`header-unread-${user.id}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "messages" }, () => { void refreshUnread() })
+      .subscribe()
+    return () => {
+      active = false
+      void supabase.removeChannel(channel)
+    }
+  }, [mounted, isAuthenticated, user?.id])
 
   // Cmd+K / Ctrl+K to open search
   useEffect(() => {
@@ -173,6 +200,20 @@ export function Header({ categories = [] }: HeaderProps) {
             <Search className="h-5 w-5" />
           </button>
 
+          {mounted && isAuthenticated && (
+            <Link
+              href="/messages"
+              className="relative inline-flex h-10 w-10 items-center justify-center rounded-md hover:bg-accent"
+              aria-label={unreadCount > 0 ? `${unreadCount} message(s) non lu(s)` : "Mes messages"}
+            >
+              <Bell className="h-5 w-5" />
+              {unreadCount > 0 && (
+                <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-semibold text-white" aria-live="polite">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
+              )}
+            </Link>
+          )}
           <Link
             href="/wishlist"
             className="hidden h-10 w-10 items-center justify-center rounded-md hover:bg-accent lg:inline-flex"
