@@ -44,10 +44,13 @@ export default function AnnonceDetailPage() {
 
   useEffect(() => {
     let active = true
-    setActiveImageIndex(0)
     createClient().from("listings").select("*").eq("id", params.id).eq("status", "active").maybeSingle()
       .then(({ data }) => {
-        if (active) { setListing(data as Listing | null); setLoading(false) }
+        if (active) {
+          setActiveImageIndex(0)
+          setListing(data as Listing | null)
+          setLoading(false)
+        }
       })
     return () => { active = false }
   }, [params.id])
