@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useCartStore } from "@/store/cart"
+import { createClient } from "@/lib/supabase/client"
 import { useOrdersStore } from "@/store/orders"
 import { CartSummary } from "@/components/cart/cart-summary"
 import { formatPrice } from "@/lib/utils"
@@ -35,6 +36,8 @@ export default function CheckoutPage() {
   const items = useCartStore((s) => s.items)
   const getSubtotal = useCartStore((s) => s.getSubtotal)
   const clearCart = useCartStore((s) => s.clearCart)
+  const removeItem = useCartStore((s) => s.removeItem)
+  const updateQuantity = useCartStore((s) => s.updateQuantity)
   const addOrder = useOrdersStore((s) => s.addOrder)
   const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -226,17 +229,88 @@ export default function CheckoutPage() {
       return
     }
 
-    const blockedListing = items.find((item) => {
-      if (!item.sellerId || item.shipsInternationally !== false) return false
-      const originCountryCode = item.shippingOriginCountryCode?.trim().toUpperCase()
-      return !originCountryCode || originCountryCode !== destinationCountryCode
-    })
-    if (blockedListing) {
-      toast.error(`Le vendeur de « ${blockedListing.name} » n'autorise pas l'expédition vers ce pays.`)
-      return
-    }
-
     setLoading(true)
+
+    const listingItems = items.filter((item) => Boolean(item.sellerId))
+    if (listingItems.length > 0) {
+      try {
+        const supabase = createClient()
+        const { data: authData, error: authError } = await supabase.auth.getUser()
+        if (authError || !authData.user) {
+          toast.error("Reconnecte-toi pour vérifier les annonces de ton panier.")
+          router.push("/auth/login")
+          setLoading(false)
+          return
+        }
+
+        const invalidQuantity = listingItems.find((item) => item.quantity !== 1)
+        if (invalidQuantity) {
+          for (const item of listingItems) {
+            if (item.quantity !== 1) updateQuantity(item.variantId, 1)
+          }
+          toast.info("Les annonces sont des articles uniques : leur quantité a été remise à 1. Vérifie le récapitulatif.")
+          setLoading(false)
+          return
+        }
+
+        const listingIds = [...new Set(listingItems.map((item) => item.productId))]
+        const { data: currentListings, error: listingsError } = await supabase
+          .from("listings")
+          .select("id,title,price,seller_id,status,location,shipping_origin_country_code,shipping_fee_amount,shipping_fee_payer,ships_internationally")
+          .in("id", listingIds)
+
+        if (listingsError) {
+          toast.error("Impossible de vérifier la disponibilité des annonces. Réessaie.")
+          setLoading(false)
+          return
+        }
+
+        const listingById = new Map((currentListings ?? []).map((listing) => [listing.id, listing]))
+        for (const item of listingItems) {
+          const current = listingById.get(item.productId)
+          if (!current || current.status !== "active") {
+            removeItem(item.variantId)
+            toast.error("Une annonce de ton panier n'est plus disponible. Elle a été retirée.")
+            setLoading(false)
+            return
+          }
+          if (current.seller_id !== item.sellerId || current.seller_id === authData.user.id) {
+            removeItem(item.variantId)
+            toast.error("Une annonce de ton panier n'est plus disponible pour ce compte.")
+            setLoading(false)
+            return
+          }
+
+          const currentPrice = Math.round(Number(current.price) * 100)
+          const currentShipping = Math.round(Number(current.shipping_fee_amount ?? 0) * 100)
+          const listingChanged =
+            currentPrice !== item.price ||
+            currentShipping !== (item.shippingFeeAmount ?? 0) ||
+            current.shipping_fee_payer !== (item.shippingFeePayer ?? "buyer") ||
+            current.ships_internationally !== (item.shipsInternationally ?? true) ||
+            (current.shipping_origin_country_code ?? null) !== (item.shippingOriginCountryCode ?? null)
+
+          if (listingChanged) {
+            toast.error("Le prix ou les conditions d'expédition de « " + current.title + " » ont changé. Retire puis ajoute de nouveau cette annonce.")
+            setLoading(false)
+            return
+          }
+
+          if (current.ships_internationally === false) {
+            const originCountryCode = current.shipping_origin_country_code?.trim().toUpperCase()
+            if (!originCountryCode || originCountryCode !== destinationCountryCode) {
+              toast.error("Le vendeur de « " + current.title + " » n'autorise pas l'expédition vers ce pays.")
+              setLoading(false)
+              return
+            }
+          }
+        }
+      } catch {
+        toast.error("La vérification des annonces est indisponible. Réessaie.")
+        setLoading(false)
+        return
+      }
+    }
 
     // Démonstration locale uniquement : les estimations vendeur ne sont pas des tarifs transporteur vérifiés.
     const shipping = shippingEstimate
