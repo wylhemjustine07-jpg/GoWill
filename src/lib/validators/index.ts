@@ -16,6 +16,13 @@ export const addressSchema = z.object({
 
 // --- Auth ---
 
+// Le contrôle contre les mots de passe déjà divulgués dépend du plan Auth Supabase.
+// Cette règle côté interface renforce les nouveaux mots de passe sans remplacer ce contrôle serveur.
+export const passwordSchema = z
+  .string()
+  .min(12, "Le mot de passe doit contenir au moins 12 caractères.")
+  .max(128, "Le mot de passe ne peut pas dépasser 128 caractères.")
+
 export const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(8, "Password must be at least 8 characters"),
@@ -26,7 +33,7 @@ export const registerSchema = z
     firstName: z.string().min(1, "First name is required"),
     lastName: z.string().min(1, "Last name is required"),
     email: z.string().email("Invalid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
+    password: passwordSchema,
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
