@@ -53,7 +53,7 @@ export function CartItem({ item }: CartItemProps) {
               </p>
             )}
             <p className="text-xs text-muted-foreground">
-              {formatPrice(item.price)} each
+              {formatPrice(item.price)} l’unité
             </p>
           </div>
           <Button
@@ -61,17 +61,21 @@ export function CartItem({ item }: CartItemProps) {
             size="icon"
             className="h-6 w-6"
             onClick={() => removeItem(item.variantId)}
-            aria-label={`Remove ${item.name}`}
+            aria-label={`Retirer ${item.name} du panier`}
           >
             <X className="h-3 w-3" />
           </Button>
         </div>
 
         <div className="flex items-center justify-between gap-2">
-          <QuantitySelector
-            quantity={item.quantity}
-            onQuantityChange={(q) => updateQuantity(item.variantId, q)}
-          />
+          {item.sellerId ? (
+            <span className="text-xs text-muted-foreground">1 exemplaire · annonce unique</span>
+          ) : (
+            <QuantitySelector
+              quantity={item.quantity}
+              onQuantityChange={(q) => updateQuantity(item.variantId, q)}
+            />
+          )}
           <span className="shrink-0 text-sm font-medium tabular-nums">
             {formatPrice(item.lineTotal)}
           </span>
