@@ -16,6 +16,7 @@ interface BuyListingButtonProps {
     image_urls: string[] | null
     seller_id: string
     location: string | null
+    shipping_origin_country_code?: string | null
     shipping_fee_amount: number
     shipping_fee_payer: "buyer" | "seller" | "split"
     ships_internationally: boolean
@@ -60,6 +61,7 @@ export function BuyListingButton({ listing, className, size = "default" }: BuyLi
         quantity: 1,
         sellerId: listing.seller_id,
         shippingOrigin: listing.location,
+        shippingOriginCountryCode: listing.shipping_origin_country_code ?? null,
         shippingFeeAmount: Math.round(Number(listing.shipping_fee_amount ?? 0) * 100),
         shippingFeePayer: listing.shipping_fee_payer ?? "buyer",
         shipsInternationally: listing.ships_internationally ?? true,
