@@ -23,6 +23,7 @@ type Listing = {
   image_urls: string[]
   seller_id: string
   created_at: string
+  shipping_origin_country_code: string | null
   shipping_fee_amount: number
   shipping_fee_payer: "buyer" | "seller" | "split"
   ships_internationally: boolean
