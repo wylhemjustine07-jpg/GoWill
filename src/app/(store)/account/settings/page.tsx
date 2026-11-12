@@ -10,6 +10,7 @@ import { useAuthGuard } from "@/hooks/use-auth-guard"
 import { useAuthStore } from "@/store/auth"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
+import { passwordSchema } from "@/lib/validators"
 
 export default function SettingsPage() {
   const { user, isReady } = useAuthGuard()
@@ -44,8 +45,9 @@ export default function SettingsPage() {
   async function handleChangePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!user?.email) return
-    if (newPassword.length < 8) {
-      toast.error("Le nouveau mot de passe doit contenir au moins 8 caractères.")
+    const passwordValidation = passwordSchema.safeParse(newPassword)
+    if (!passwordValidation.success) {
+      toast.error(passwordValidation.error.issues[0].message)
       return
     }
     if (newPassword !== confirmPassword) {
@@ -102,8 +104,8 @@ export default function SettingsPage() {
         <CardContent>
           <form onSubmit={handleChangePassword} className="space-y-4">
             <div className="space-y-2"><Label htmlFor="currentPassword">Mot de passe actuel</Label><Input id="currentPassword" type="password" autoComplete="current-password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} required /></div>
-            <div className="space-y-2"><Label htmlFor="newPassword">Nouveau mot de passe</Label><Input id="newPassword" type="password" autoComplete="new-password" minLength={8} value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required /></div>
-            <div className="space-y-2"><Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label><Input id="confirmPassword" type="password" autoComplete="new-password" minLength={8} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} required /></div>
+            <div className="space-y-2"><Label htmlFor="newPassword">Nouveau mot de passe (12 caractères minimum)</Label><Input id="newPassword" type="password" autoComplete="new-password" minLength={12} maxLength={128} value={newPassword} onChange={(event) => setNewPassword(event.target.value)} required /></div>
+            <div className="space-y-2"><Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label><Input id="confirmPassword" type="password" autoComplete="new-password" minLength={12} maxLength={128} value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} required /></div>
             <Button type="submit" disabled={savingPassword}>{savingPassword ? "Modification..." : "Modifier le mot de passe"}</Button>
           </form>
         </CardContent>
