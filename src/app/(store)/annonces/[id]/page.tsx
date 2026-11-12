@@ -37,12 +37,14 @@ export default function AnnonceDetailPage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const [listing, setListing] = useState<Listing | null>(null)
+  const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [loading, setLoading] = useState(true)
   const [contacting, setContacting] = useState(false)
   const currentUser = useAuthStore((state) => state.user)
 
   useEffect(() => {
     let active = true
+    setActiveImageIndex(0)
     createClient().from("listings").select("*").eq("id", params.id).eq("status", "active").maybeSingle()
       .then(({ data }) => {
         if (active) { setListing(data as Listing | null); setLoading(false) }
@@ -88,8 +90,30 @@ export default function AnnonceDetailPage() {
 
   return (
     <section className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-2 sm:px-6">
-      <div className="relative aspect-square overflow-hidden rounded-2xl bg-neutral-100">
-        {listing.image_urls?.[0] ? <Image src={listing.image_urls[0]} alt={listing.title} fill unoptimized className="object-cover" /> : <div className="flex h-full items-center justify-center text-7xl text-neutral-300">📦</div>}
+      <div className="space-y-3">
+        <div className="relative aspect-square overflow-hidden rounded-2xl bg-neutral-100">
+          {listing.image_urls?.[activeImageIndex] ? (
+            <Image src={listing.image_urls[activeImageIndex]} alt={listing.title} fill unoptimized className="object-contain" priority />
+          ) : (
+            <div className="flex h-full items-center justify-center text-7xl text-neutral-300">📦</div>
+          )}
+        </div>
+        {(listing.image_urls?.length ?? 0) > 1 && (
+          <div className="grid grid-cols-5 gap-2">
+            {listing.image_urls.map((imageUrl, index) => (
+              <button
+                key={imageUrl}
+                type="button"
+                onClick={() => setActiveImageIndex(index)}
+                aria-label={"Afficher la photo " + String(index + 1)}
+                aria-pressed={activeImageIndex === index}
+                className={"relative aspect-square overflow-hidden rounded-lg border-2 bg-neutral-100 " + (activeImageIndex === index ? "border-violet-600" : "border-transparent")}
+              >
+                <Image src={imageUrl} alt={listing.title + " — photo " + String(index + 1)} fill unoptimized className="object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       <div className="flex flex-col">
         <p className="text-sm font-semibold text-violet-700">{listing.category}</p>
