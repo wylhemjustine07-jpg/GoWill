@@ -23,12 +23,12 @@ export default function AdminLayout({
     return (
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold">Access Denied</h1>
+          <h1 className="text-2xl font-bold">Accès refusé</h1>
           <p className="mt-2 text-muted-foreground">
-            You need admin privileges to access this page.
+            Ton compte ne dispose pas des droits d’administration.
           </p>
           <Link href="/" className="mt-4 inline-block text-sm underline">
-            Go Home
+            Retour à l’accueil
           </Link>
         </div>
       </div>
@@ -61,7 +61,7 @@ export default function AdminLayout({
             href="/"
             className="text-sm text-muted-foreground hover:text-foreground"
           >
-            &larr; Back to Store
+            &larr; Retour au site
           </Link>
         </div>
       </aside>

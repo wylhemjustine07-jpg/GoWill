@@ -5,11 +5,11 @@ import { EmptyState } from "@/components/ui/empty-state"
 export default function AdminCustomersPage() {
   return (
     <div>
-      <PageHeader title="Customers" description="View and manage your customer base." />
+      <PageHeader title="Gestion des membres" description="Cet outil d'administration n'est pas encore activé." />
       <EmptyState
         icon={Users}
-        title="No customers yet"
-        description="Customer data will populate as users create accounts."
+        title="Gestion des membres indisponible"
+        description="La liste des comptes et les actions de modération ne sont pas encore raccordées."
       />
     </div>
   )

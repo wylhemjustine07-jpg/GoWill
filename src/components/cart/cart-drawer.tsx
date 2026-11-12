@@ -10,9 +10,7 @@ import {
   SheetTitle,
   SheetFooter,
 } from "@/components/ui/sheet"
-import { Separator } from "@/components/ui/separator"
 import { CartItem } from "./cart-item"
-import { CartSummary } from "./cart-summary"
 import { useCartStore } from "@/store/cart"
 import { formatPrice } from "@/lib/utils"
 
@@ -21,7 +19,6 @@ export function CartDrawer() {
   const isOpen = useCartStore((s) => s.isOpen)
   const closeCart = useCartStore((s) => s.closeCart)
   const getSubtotal = useCartStore((s) => s.getSubtotal)
-
   const subtotal = getSubtotal()
 
   return (
@@ -30,33 +27,35 @@ export function CartDrawer() {
         <SheetHeader>
           <div className="flex items-center justify-between">
             <button
+              type="button"
               onClick={closeCart}
               className="text-sm text-muted-foreground hover:text-foreground sm:hidden"
             >
-              &larr; Back
+              ← Retour
             </button>
             <button
+              type="button"
               onClick={closeCart}
-              className="hidden rounded-md p-1 text-muted-foreground hover:text-foreground sm:block sm:ml-auto"
-              aria-label="Close cart"
+              className="hidden rounded-md p-1 text-muted-foreground hover:text-foreground sm:ml-auto sm:block"
+              aria-label="Fermer le panier"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
           <SheetTitle className="mt-2 text-2xl font-bold tracking-tight">
-            Cart ({items.length} {items.length === 1 ? "item" : "items"})
+            Mon panier ({items.length} article{items.length > 1 ? "s" : ""})
           </SheetTitle>
         </SheetHeader>
 
         {items.length === 0 ? (
           <div className="flex flex-1 flex-col items-center justify-center text-center">
             <ShoppingBag className="h-12 w-12 text-muted-foreground/50" />
-            <p className="mt-4 text-sm font-medium">Your cart is empty</p>
+            <p className="mt-4 text-sm font-medium">Ton panier est vide</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              Add items to get started
+              Parcours les annonces pour trouver un article.
             </p>
             <Button className="mt-6" onClick={closeCart} asChild>
-              <Link href="/shop">Continue Shopping</Link>
+              <Link href="/annonces">Découvrir les annonces</Link>
             </Button>
           </div>
         ) : (
@@ -72,20 +71,21 @@ export function CartDrawer() {
             <SheetFooter className="!mt-0 shrink-0 border-t !px-4 !pt-4 !pb-8">
               <div className="w-full space-y-3">
                 <div className="flex justify-between text-sm font-medium">
-                  <span>Subtotal</span>
+                  <span>Sous-total</span>
                   <span>{formatPrice(subtotal)}</span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Shipping and taxes calculated at checkout.
+                  Les frais d'expédition sont estimés dans l'étape suivante. Aucun paiement réel n'est effectué.
                 </p>
                 <Button className="w-full" size="lg" asChild onClick={closeCart}>
-                  <Link href="/checkout">Checkout</Link>
+                  <Link href="/checkout">Voir la livraison et l'aperçu</Link>
                 </Button>
                 <button
+                  type="button"
                   className="mb-4 w-full py-2 text-center text-sm text-muted-foreground underline hover:text-foreground sm:mb-0 sm:hidden"
                   onClick={closeCart}
                 >
-                  Continue Shopping
+                  Continuer mes achats
                 </button>
               </div>
             </SheetFooter>

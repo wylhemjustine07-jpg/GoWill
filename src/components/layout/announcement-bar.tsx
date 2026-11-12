@@ -27,7 +27,7 @@ export function AnnouncementBar() {
       <button
         onClick={handleDismiss}
         className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm p-1 text-background/60 hover:text-background"
-        aria-label="Dismiss announcement"
+        aria-label="Masquer l’annonce"
       >
         <X className="h-3.5 w-3.5" />
       </button>

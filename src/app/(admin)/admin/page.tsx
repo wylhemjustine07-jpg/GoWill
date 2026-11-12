@@ -1,30 +1,43 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { PageHeader } from "@/components/ui/page-header"
-import { DollarSign, Package, ShoppingCart, Users } from "lucide-react"
+import { ShieldCheck, Users, Package } from "lucide-react"
 
-const stats = [
-  { name: "Total Revenue", value: "$12,345", icon: DollarSign },
-  { name: "Orders", value: "156", icon: ShoppingCart },
-  { name: "Products", value: "48", icon: Package },
-  { name: "Customers", value: "2,340", icon: Users },
+const plannedTools = [
+  {
+    title: "Gestion des annonces",
+    description: "Une file de modération devra permettre de vérifier les annonces signalées et les contenus interdits.",
+    icon: Package,
+  },
+  {
+    title: "Gestion des membres",
+    description: "Les outils de gestion des comptes et de traitement des signalements ne sont pas encore raccordés.",
+    icon: Users,
+  },
 ]
 
 export default function AdminDashboardPage() {
   return (
     <div>
-      <PageHeader title="Dashboard" description="Overview of your store performance." />
+      <PageHeader
+        title="Administration GoWill"
+        description="Les outils de modération et de gestion ne sont pas encore activés."
+      />
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.name}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {stat.name}
+      <div className="mt-8 rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
+        Aucun chiffre de vente ou de fréquentation n'est affiché ici : les paiements et les commandes réelles ne sont pas activés.
+      </div>
+
+      <div className="mt-8 grid gap-4 md:grid-cols-2">
+        {plannedTools.map((tool) => (
+          <Card key={tool.title}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <tool.icon className="h-5 w-5 text-muted-foreground" />
+                {tool.title}
               </CardTitle>
-              <stat.icon className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">{stat.value}</p>
+              <p className="text-sm text-muted-foreground">{tool.description}</p>
             </CardContent>
           </Card>
         ))}
@@ -32,11 +45,15 @@ export default function AdminDashboardPage() {
 
       <Card className="mt-8">
         <CardHeader>
-          <CardTitle>Recent Orders</CardTitle>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <ShieldCheck className="h-5 w-5" />
+            Prochaine étape
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            No orders yet. Orders will appear here once customers start purchasing.
+            Avant l'ouverture publique, l'accès administrateur devra être attribué
+            de façon sécurisée et les outils de modération devront être testés.
           </p>
         </CardContent>
       </Card>

@@ -5,7 +5,6 @@ import { ArrowRight, ShoppingBag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { siteConfig } from "@/lib/config"
-import { NewsletterForm } from "@/components/layout/newsletter-form"
 import { createClient } from "@/lib/supabase/server"
 
 export const metadata: Metadata = {
@@ -138,15 +137,7 @@ export default async function HomePage() {
       </section>
 
 
-      <section className="bg-neutral-900 text-white">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center px-4 py-16 text-center sm:px-6 lg:px-8">
-          <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">Restez au courant</h2>
-          <p className="mt-4 text-neutral-400">
-            Recevez les actualités et nouveautés de GoWill.
-          </p>
-          <NewsletterForm />
-        </div>
-      </section>
+
     </div>
   )
 }
