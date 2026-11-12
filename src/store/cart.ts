@@ -20,6 +20,7 @@ interface CartState {
     quantity?: number
     sellerId?: string
     shippingOrigin?: string | null
+    shippingOriginCountryCode?: string | null
     shippingFeeAmount?: number
     shippingFeePayer?: "buyer" | "seller" | "split"
     shipsInternationally?: boolean
@@ -56,6 +57,7 @@ export const useCartStore = create<CartState>()(
                       ...i,
                       sellerId: item.sellerId ?? i.sellerId,
                       shippingOrigin: item.shippingOrigin ?? i.shippingOrigin,
+                      shippingOriginCountryCode: item.shippingOriginCountryCode ?? i.shippingOriginCountryCode,
                       shippingFeeAmount: item.shippingFeeAmount ?? i.shippingFeeAmount,
                       shippingFeePayer: item.shippingFeePayer ?? i.shippingFeePayer,
                       shipsInternationally: item.shipsInternationally ?? i.shipsInternationally,
@@ -81,6 +83,7 @@ export const useCartStore = create<CartState>()(
             lineTotal: item.price * quantity,
             sellerId: item.sellerId,
             shippingOrigin: item.shippingOrigin,
+            shippingOriginCountryCode: item.shippingOriginCountryCode,
             shippingFeeAmount: item.shippingFeeAmount,
             shippingFeePayer: item.shippingFeePayer,
             shipsInternationally: item.shipsInternationally,
