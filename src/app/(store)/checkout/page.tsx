@@ -85,7 +85,7 @@ export default function CheckoutPage() {
   const fallbackShipping = subtotal >= siteConfig.freeShippingThreshold ? 0 : 599
   const itemsWithCarrierRates = items.map((item) => {
     const rate = selectedCarrierRates[item.variantId]
-    return rate ? { ...item, shippingFeeAmount: Math.round(rate.amount * 100) } : item
+    return rate ? { ...item, shippingFeeAmount: Math.round((rate.amount * 100) / Math.max(1, item.quantity)) } : item
   })
   const shippingEstimate = calculateCartShipping(itemsWithCarrierRates, fallbackShipping)
 
@@ -291,7 +291,8 @@ export default function CheckoutPage() {
           total: item.lineTotal,
           sellerId: item.sellerId,
           shippingOrigin: item.shippingOrigin,
-          shippingFeeAmount: selectedRate ? Math.round(selectedRate.amount * 100) : item.shippingFeeAmount,
+          shippingOriginCountryCode: item.shippingOriginCountryCode,
+          shippingFeeAmount: selectedRate ? Math.round((selectedRate.amount * 100) / Math.max(1, item.quantity)) : item.shippingFeeAmount,
           shippingFeePayer: item.shippingFeePayer,
           shipsInternationally: item.shipsInternationally,
           shippingRateId: selectedRate?.rateId,
@@ -397,7 +398,7 @@ export default function CheckoutPage() {
             <CardContent className="space-y-4">
               {items.map((item) => {
                 const selectedRate = selectedCarrierRates[item.variantId]
-                const effectiveFee = selectedRate ? Math.round(selectedRate.amount * 100) : (item.shippingFeeAmount ?? 0)
+                const effectiveFee = selectedRate ? Math.round((selectedRate.amount * 100) / Math.max(1, item.quantity)) : (item.shippingFeeAmount ?? 0)
                 const buyerShare = getBuyerShippingShare(effectiveFee, item.shippingFeePayer ?? "buyer")
                 const availableRates = carrierRates[item.variantId]
                 return <div key={item.variantId} className="space-y-2 border-b pb-3 text-sm last:border-b-0">
