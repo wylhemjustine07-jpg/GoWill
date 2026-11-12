@@ -175,6 +175,9 @@ export interface OrderLineItem {
   shippingFeeAmount?: number
   shippingFeePayer?: ShippingFeePayer
   shipsInternationally?: boolean
+  shippingRateId?: string
+  shippingProvider?: string
+  shippingService?: string
 }
 
 export interface Order {
