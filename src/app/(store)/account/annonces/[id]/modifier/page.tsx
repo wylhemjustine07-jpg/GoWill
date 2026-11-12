@@ -12,13 +12,13 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 const categories = ["Mode", "Maison", "High-tech", "Téléphones", "Jeux vidéo", "Sports et loisirs", "Beauté", "Livres", "Jouets", "Autre"]
-type ListingForm = { title: string; description: string; price: string; category: string; item_condition: string; shippingCity: string; shippingCountry: string; shippingFee: string; shippingFeePayer: "buyer" | "seller" | "split"; shipsInternationally: boolean }
+type ListingForm = { title: string; description: string; price: string; category: string; item_condition: string; shippingCity: string; shippingCountry: string; shippingFee: string; shippingFeePayer: "buyer" | "seller" | "split"; shipsInternationally: boolean; parcelWeightKg: string; parcelLengthCm: string; parcelWidthCm: string; parcelHeightCm: string }
 
 export default function ModifierAnnoncePage() {
   const params = useParams<{ id: string }>()
   const router = useRouter()
   const { user, isReady } = useAuthGuard()
-  const [form, setForm] = useState<ListingForm>({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "", shippingFee: "0", shippingFeePayer: "buyer", shipsInternationally: true })
+  const [form, setForm] = useState<ListingForm>({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "", shippingFee: "0", shippingFeePayer: "buyer", shipsInternationally: true, parcelWeightKg: "0.5", parcelLengthCm: "20", parcelWidthCm: "15", parcelHeightCm: "10" })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [missing, setMissing] = useState(false)
@@ -26,7 +26,7 @@ export default function ModifierAnnoncePage() {
   useEffect(() => {
     if (!isReady || !user) return
     let active = true
-    createClient().from("listings").select("id,title,description,price,category,item_condition,location,shipping_fee_amount,shipping_fee_payer,ships_internationally").eq("id", params.id).eq("seller_id", user.id).maybeSingle()
+    createClient().from("listings").select("id,title,description,price,category,item_condition,location,shipping_fee_amount,shipping_fee_payer,ships_internationally,parcel_weight_kg,parcel_length_cm,parcel_width_cm,parcel_height_cm").eq("id", params.id).eq("seller_id", user.id).maybeSingle()
       .then(({ data, error }) => {
         if (!active) return
         if (error || !data) setMissing(true)
@@ -44,6 +44,10 @@ export default function ModifierAnnoncePage() {
             shippingFee: String(data.shipping_fee_amount ?? 0),
             shippingFeePayer: data.shipping_fee_payer === "seller" || data.shipping_fee_payer === "split" ? data.shipping_fee_payer : "buyer",
             shipsInternationally: data.ships_internationally ?? true,
+            parcelWeightKg: String(data.parcel_weight_kg ?? 0.5),
+            parcelLengthCm: String(data.parcel_length_cm ?? 20),
+            parcelWidthCm: String(data.parcel_width_cm ?? 15),
+            parcelHeightCm: String(data.parcel_height_cm ?? 10),
           })
         }
         setLoading(false)
@@ -69,6 +73,16 @@ export default function ModifierAnnoncePage() {
       toast.error("Indique une estimation de frais d'expédition valide.")
       return
     }
+    const parcelWeightKg = Number(form.parcelWeightKg)
+    const parcelLengthCm = Number(form.parcelLengthCm)
+    const parcelWidthCm = Number(form.parcelWidthCm)
+    const parcelHeightCm = Number(form.parcelHeightCm)
+    if (![parcelWeightKg, parcelLengthCm, parcelWidthCm, parcelHeightCm].every(Number.isFinite)
+      || parcelWeightKg <= 0 || parcelWeightKg > 70
+      || [parcelLengthCm, parcelWidthCm, parcelHeightCm].some((value) => value <= 0 || value > 200)) {
+      toast.error("Vérifie le poids et les dimensions du colis.")
+      return
+    }
     setSaving(true)
     const { error } = await createClient().from("listings").update({
       title: form.title.trim(),
@@ -80,6 +94,10 @@ export default function ModifierAnnoncePage() {
       shipping_fee_amount: shippingFeeAmount,
       shipping_fee_payer: form.shippingFeePayer,
       ships_internationally: form.shipsInternationally,
+      parcel_weight_kg: parcelWeightKg,
+      parcel_length_cm: parcelLengthCm,
+      parcel_width_cm: parcelWidthCm,
+      parcel_height_cm: parcelHeightCm,
       updated_at: new Date().toISOString(),
     }).eq("id", params.id).eq("seller_id", user.id)
     setSaving(false)
@@ -106,6 +124,16 @@ export default function ModifierAnnoncePage() {
           <div className="space-y-2"><Label htmlFor="shippingCountry">Pays d'expédition</Label><Input id="shippingCountry" maxLength={80} value={form.shippingCountry} onChange={(e) => update("shippingCountry", e.target.value)} placeholder="Ex. Japon, France, Canada..." autoComplete="country-name" required /></div>
           <div className="space-y-2"><Label htmlFor="shippingFee">Frais d'expédition estimés (€)</Label><Input id="shippingFee" type="number" min="0" step="0.01" value={form.shippingFee} onChange={(e) => update("shippingFee", e.target.value)} required /><p className="text-xs text-muted-foreground">Indique ton estimation en euros. 0 signifie que tu offres l'expédition.</p></div>
           <div className="space-y-2"><Label htmlFor="shippingFeePayer">Qui paie l'expédition ?</Label><select id="shippingFeePayer" value={form.shippingFeePayer} onChange={(e) => update("shippingFeePayer", e.target.value as ListingForm["shippingFeePayer"])} className="h-10 w-full rounded-md border bg-background px-3 text-sm"><option value="buyer">L'acheteur paie 100 %</option><option value="split">Partagé à 50 / 50</option><option value="seller">Le vendeur paie 100 %</option></select></div>
+        </div>
+        <div className="space-y-3 rounded-lg border p-4">
+          <h2 className="text-sm font-semibold">Dimensions du colis prêt à expédier</h2>
+          <p className="text-xs text-muted-foreground">Ces mesures servent à demander des tarifs transporteur. Pèse et mesure le colis emballé.</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-2"><Label htmlFor="parcelWeightKg">Poids (kg)</Label><Input id="parcelWeightKg" type="number" min="0.01" max="70" step="0.001" value={form.parcelWeightKg} onChange={(e) => update("parcelWeightKg", e.target.value)} required /></div>
+            <div className="space-y-2"><Label htmlFor="parcelLengthCm">Longueur (cm)</Label><Input id="parcelLengthCm" type="number" min="1" max="200" step="0.1" value={form.parcelLengthCm} onChange={(e) => update("parcelLengthCm", e.target.value)} required /></div>
+            <div className="space-y-2"><Label htmlFor="parcelWidthCm">Largeur (cm)</Label><Input id="parcelWidthCm" type="number" min="1" max="200" step="0.1" value={form.parcelWidthCm} onChange={(e) => update("parcelWidthCm", e.target.value)} required /></div>
+            <div className="space-y-2"><Label htmlFor="parcelHeightCm">Hauteur (cm)</Label><Input id="parcelHeightCm" type="number" min="1" max="200" step="0.1" value={form.parcelHeightCm} onChange={(e) => update("parcelHeightCm", e.target.value)} required /></div>
+          </div>
         </div>
         <label className="flex items-start gap-3 rounded-lg border p-3 text-sm"><input type="checkbox" checked={form.shipsInternationally} onChange={(e) => setForm((current) => ({ ...current, shipsInternationally: e.target.checked }))} className="mt-1 h-4 w-4" /><span><span className="font-medium">J'accepte les commandes internationales</span><span className="mt-1 block text-xs text-muted-foreground">Décoche cette case pour limiter l'annonce aux acheteurs de ton pays.</span></span></label>
         <div className="flex flex-col-reverse gap-3 sm:flex-row"><Button type="submit" className="flex-1" disabled={saving}>{saving ? "Enregistrement..." : "Enregistrer les modifications"}</Button><Button type="button" variant="outline" asChild><Link href="/account/annonces">Annuler</Link></Button></div>
