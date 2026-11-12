@@ -119,11 +119,11 @@ export default function DeposerPage() {
       <div className="mb-8">
         <p className="text-sm font-semibold text-violet-700">Espace vendeur</p>
         <h1 className="mt-2 text-3xl font-bold tracking-tight">Déposer une annonce</h1>
-        <p className="mt-2 text-muted-foreground">Présente ton produit et indique le pays depuis lequel tu l'expédieras pour les acheteurs du monde entier.</p>
+        <p className="mt-2 text-muted-foreground">Présente ton produit et indique le pays depuis lequel tu l&apos;expédieras pour les acheteurs du monde entier.</p>
       </div>
       <form onSubmit={submit} className="space-y-5 rounded-2xl border bg-white p-5 shadow-sm sm:p-7">
         <div className="space-y-2">
-          <Label htmlFor="title">Titre de l'annonce</Label>
+          <Label htmlFor="title">Titre de l&apos;annonce</Label>
           <Input id="title" maxLength={120} minLength={3} value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="Ex. Veste en jean" required />
         </div>
         <div className="space-y-2">
@@ -148,11 +148,11 @@ export default function DeposerPage() {
             </select>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="shippingCity">Ville d'expédition</Label>
+            <Label htmlFor="shippingCity">Ville d&apos;expédition</Label>
             <Input id="shippingCity" maxLength={100} value={form.shippingCity} onChange={(e) => update("shippingCity", e.target.value)} placeholder="Ex. Tokyo" autoComplete="address-level2" required />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="shippingCountry">Pays d'expédition</Label>
+            <Label htmlFor="shippingCountry">Pays d&apos;expédition</Label>
             <Input id="shippingCountry" maxLength={80} value={form.shippingCountry} onChange={(e) => update("shippingCountry", e.target.value)} placeholder="Ex. Japon, France, Canada..." autoComplete="country-name" required />
           </div>
           <div className="space-y-2">
@@ -161,14 +161,14 @@ export default function DeposerPage() {
             <p className="text-xs text-muted-foreground">Ce code permet de vérifier les destinations avec les transporteurs.</p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="shippingFee">Frais d'expédition estimés (€)</Label>
+            <Label htmlFor="shippingFee">Frais d&apos;expédition estimés (€)</Label>
             <Input id="shippingFee" type="number" min="0" step="0.01" value={form.shippingFee} onChange={(e) => update("shippingFee", e.target.value)} placeholder="0,00" required />
             <p className="text-xs text-muted-foreground">Indique ton estimation en euros. 0 signifie que tu offres l'expédition.</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="shippingFeePayer">Qui paie l'expédition ?</Label>
             <select id="shippingFeePayer" value={form.shippingFeePayer} onChange={(e) => setForm((current) => ({ ...current, shippingFeePayer: e.target.value as "buyer" | "seller" | "split" }))} className="h-10 w-full rounded-md border bg-background px-3 text-sm">
-              <option value="buyer">L'acheteur paie 100 %</option>
+              <option value="buyer">L&apos;acheteur paie 100 %</option>
               <option value="split">Partagé à 50 / 50</option>
               <option value="seller">Le vendeur paie 100 %</option>
             </select>
@@ -186,7 +186,7 @@ export default function DeposerPage() {
         </div>
         <label className="flex items-start gap-3 rounded-lg border p-3 text-sm">
           <input type="checkbox" checked={form.shipsInternationally} onChange={(e) => setForm((current) => ({ ...current, shipsInternationally: e.target.checked }))} className="mt-1 h-4 w-4" />
-          <span><span className="font-medium">J'accepte les commandes internationales</span><span className="mt-1 block text-xs text-muted-foreground">Décoche cette case pour limiter l'annonce aux acheteurs de ton pays. La couverture dépendra toujours des transporteurs disponibles.</span></span>
+          <span><span className="font-medium">J&apos;accepte les commandes internationales</span><span className="mt-1 block text-xs text-muted-foreground">Décoche cette case pour limiter l'annonce aux acheteurs de ton pays. La couverture dépendra toujours des transporteurs disponibles.</span></span>
         </label>
         <div className="space-y-2">
           <Label htmlFor="images">Photos (jusqu'à 5)</Label>
