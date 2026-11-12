@@ -3,8 +3,8 @@ export const siteConfig = {
   name: "GoWill",
   tagline: "La marketplace où chacun peut acheter et vendre.",
   description:
-    "GoWill réunit acheteurs et vendeurs autour d'une marketplace simple, pratique et ouverte à de nombreuses catégories de produits.",
-  announcement: "Bienvenue sur GoWill — découvrez les annonces de la communauté.",
+    "GoWill réunit les annonces de la communauté dans une marketplace simple, pratique et ouverte à de nombreuses catégories de produits.",
+  announcement: "Prototype en développement : aucune commande ni aucun paiement réel.",
   url: process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000",
   contact: {
     email: "",

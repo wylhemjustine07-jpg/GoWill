@@ -1,65 +1,87 @@
-# GoWill — Marketplace communautaire
+# GoWill — marketplace communautaire
 
-GoWill est une marketplace où les visiteurs peuvent parcourir les annonces et où les membres inscrits peuvent publier et gérer leurs produits.
+GoWill est un prototype de marketplace inspiré des catalogues de mode en ligne et des petites annonces entre particuliers. Les visiteurs peuvent parcourir les annonces ; les membres connectés peuvent publier et gérer leurs produits.
+
+## État actuel
+
+**GoWill est encore en démonstration.** Le site n'accepte pas de paiements réels et ne transmet pas de commandes aux vendeurs. Les aperçus de commande sont conservés dans le navigateur utilisé pour la démonstration. Les tarifs Shippo, lorsqu'ils sont configurés, servent uniquement à afficher des devis ; aucune étiquette ni expédition n'est créée.
+
+## Fonctionnalités disponibles
+
+- Inscription et connexion par e-mail avec Supabase Auth.
+- Parcours public des annonces des membres sur /annonces.
+- Recherche, filtres par catégorie, état, lieu et prix, tri et pagination.
+- Fiche annonce avec galerie de photos.
+- Publication réservée aux membres connectés, avec jusqu'à cinq photos.
+- Espace vendeur pour modifier, remettre en ligne, marquer comme vendu ou supprimer ses annonces.
+- Favoris enregistrés dans Supabase.
+- Messagerie privée entre acheteurs et vendeurs, avec notifications de messages non lus.
+- Gestion des adresses personnelles et de l'adresse d'expédition privée du vendeur.
+- Vérifications de contenu pour certaines catégories de produits réglementés.
+- Affichage d'options d'expédition et, si le service est configuré, demande de devis à Shippo pour la livraison à domicile.
+
+## Limites connues
+
+- Le paiement réel n'est pas intégré.
+- Les commandes ne sont pas enregistrées dans une base de données : l'aperçu est local au navigateur.
+- Aucun vendeur ne reçoit encore de commande à traiter depuis un tableau de bord.
+- Les étiquettes, enlèvements, relais officiels et suivis transporteur ne sont pas intégrés.
+- Les taxes, droits de douane et conversions de devises ne sont pas calculés.
+- Les tarifs transporteur exposés par le prototype sont actuellement limités aux résultats en euros.
+- /shop et les catégories historiques contiennent encore des produits de démonstration ; les annonces des membres sont sur /annonces.
+- Les pages d'information et les documents juridiques doivent être relus et validés avant toute ouverture commerciale.
+
+Ne considère pas une estimation de livraison ni l'écran « aperçu de commande » comme une confirmation de vente. Pour tester, utilise des données fictives. N'ajoute pas de coordonnées personnelles ou d'adresse réelle dans le prototype sans l'aide d'un adulte responsable.
 
 ## Technologies
 
 - Next.js 16, React 19 et TypeScript
-- Tailwind CSS v4 et shadcn/ui
+- Tailwind CSS et composants shadcn/ui
 - Supabase Auth, PostgreSQL et Storage
 - Zustand, Zod et next-intl
 
-## Fonctionnalités déjà préparées
+## Configuration locale
 
-- Accueil et navigation en français.
-- Inscription et connexion par e-mail et mot de passe via Supabase.
-- Sessions persistantes et actualisation des cookies de session.
-- Consultation des annonces publiques sur `/annonces`.
-- Page de détail sur `/annonces/[id]`.
-- Publication réservée aux membres connectés sur `/deposer`.
-- Ajout de jusqu'à cinq photos par annonce.
-- Espace vendeur sur `/account/annonces` pour remettre une annonce en ligne, la marquer comme vendue ou la supprimer.
-- Profils, annonces et favoris dans PostgreSQL avec règles RLS.
-- Photos stockées dans un bucket Supabase public ; l'envoi et la suppression sont limités au dossier du membre propriétaire.
+1. Installe Node.js 22 ou une version compatible avec le projet.
+2. Copie .env.example vers .env.local.
+3. Vérifie les variables publiques Supabase indiquées dans le fichier.
+4. Configure dans Supabase Auth les URL locales de redirection.
+5. Installe les dépendances et démarre le serveur.
 
-## Configuration
+Variables publiques :
+- NEXT_PUBLIC_SUPABASE_URL
+- NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+- NEXT_PUBLIC_BASE_URL
 
-1. Copie le fichier `.env.example` vers `.env.local`.
-2. Les variables publiques du projet Supabase GoWill sont indiquées dans l'exemple.
-3. Dans Supabase Auth, configure les URL de redirection autorisées pour ton environnement local et ton futur domaine.
-4. Installe les dépendances et démarre le serveur.
+Variables facultatives réservées au serveur, nécessaires uniquement pour les devis d'expédition :
+- SUPABASE_SERVICE_ROLE_KEY
+- SHIPPO_API_TOKEN
 
-Ne place jamais de clé secrète Supabase dans une variable `NEXT_PUBLIC_` ou dans le dépôt.
+Les deux dernières variables sont des secrets : ne les ajoute jamais à NEXT_PUBLIC_*, au navigateur, à GitHub ou à un message. Configure-les uniquement dans l'environnement serveur approprié, avec un adulte responsable.
 
 ## Démarrer en local
 
-```bash
 git clone https://github.com/wylhemjustine07-jpg/GoWill.git
 cd GoWill
+git switch feature/gowill-marketplace
 npm install
 npm run dev
-```
 
 Ouvre ensuite http://localhost:3000.
 
+## Vérifications
+
+npm run lint
+npm run build
+
+Le contrôle ESLint global contient encore des erreurs historiques dans des composants du modèle d'origine. La CI lance également un contrôle ciblé des pages marketplace modifiées et une compilation de production.
+
 ## Base de données
 
-Les migrations SQL se trouvent dans `supabase/migrations/` :
+Les migrations SQL sont conservées dans supabase/migrations/. Le projet Supabase de développement possède déjà les tables de profils, annonces, favoris, conversations, messages, adresses et adresses d'expédition privées. Vérifie l'état des migrations dans le tableau de bord Supabase avant d'en appliquer de nouvelles.
 
-- `20261111150000_initial_marketplace.sql` : profils, annonces, favoris et politiques RLS.
-- `20261111153000_create_profile_on_signup.sql` : création automatique du profil à l'inscription.
-- `20261111160000_listing_images_storage.sql` : bucket de photos et règles d'accès.
+## Avant une ouverture publique
 
-Elles ont été appliquées au projet Supabase GoWill.
+Il faudra notamment faire vérifier les documents juridiques et la politique de confidentialité, mettre en place la modération, vérifier les catégories autorisées, sécuriser le parcours vendeur, ajouter les commandes persistantes, puis choisir et configurer les prestataires de paiement et de transport avec un adulte responsable.
 
-## Prochaines étapes
-
-- Relier les favoris au compte Supabase.
-- Créer la messagerie entre acheteurs et vendeurs.
-- Ajouter les outils de modération et le tableau d'administration.
-- Concevoir le parcours de commande et intégrer un prestataire de paiement.
-- Tester le build et déployer le site sur un domaine public.
-
-## Licence
-
-MIT.
+GoWill ne doit pas être présenté comme une boutique prête à encaisser des paiements tant que ces étapes ne sont pas terminées.

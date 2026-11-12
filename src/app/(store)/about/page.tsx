@@ -2,87 +2,49 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 export const metadata: Metadata = {
-  title: "About",
-  description:
-    "Learn about the Next.js Ecommerce Starter template and Epic Design Labs, the team behind it.",
+  title: "À propos de GoWill",
+  description: "Découvre le projet de marketplace communautaire GoWill.",
 }
 
 export default function AboutPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold tracking-tight">About This Starter</h1>
+      <p className="text-sm font-semibold text-violet-700">Le projet</p>
+      <h1 className="mt-2 text-3xl font-bold tracking-tight">À propos de GoWill</h1>
       <div className="mt-8 space-y-6 text-muted-foreground">
         <p>
-          The Next.js Ecommerce Starter is a free, open-source template designed
-          to give developers and businesses a production-ready foundation for
-          building modern online stores. It&apos;s built with Next.js, Tailwind CSS,
-          and shadcn/ui — and it&apos;s designed to connect to any checkout or
-          payment system.
+          GoWill est un projet de marketplace communautaire. L'idée est de réunir
+          la découverte de produits d'un grand catalogue et les annonces publiées
+          directement par les membres.
         </p>
         <p>
-          Whether you&apos;re a developer looking for a clean starting point or a
-          business that needs a custom storefront, this template covers the
-          essentials: product catalog, cart, checkout, search, authentication,
-          wishlist, and more — all built with accessibility, SEO, and
-          performance in mind.
+          Les visiteurs peuvent parcourir les annonces. Les personnes disposant
+          d'un compte peuvent publier leurs produits, gérer leurs annonces,
+          enregistrer des favoris et échanger avec les vendeurs.
         </p>
-
-        <h2 className="!mt-12 text-xl font-semibold text-foreground">
-          Built by Epic Design Labs
-        </h2>
+        <h2 className="text-xl font-semibold text-foreground">Une marketplace en construction</h2>
         <p>
-          This starter was created by{" "}
-          <a
-            href="https://epicdesignlabs.com"
-            target="_blank"
-            rel="noopener"
-            className="underline hover:text-foreground"
-          >
-            Epic Design Labs
-          </a>
-          , a design and development studio that helps businesses build
-          high-performing ecommerce experiences. We work with brands of all
-          sizes to design, develop, and optimize online stores that convert.
+          GoWill est encore un prototype. Le paiement, la transmission réelle des
+          commandes, les étiquettes de transport et le suivi des colis ne sont
+          pas activés. Les frais affichés peuvent être des estimations et ne
+          constituent pas un tarif confirmé.
         </p>
-
-        <h2 className="!mt-12 text-xl font-semibold text-foreground">
-          What&apos;s Included
-        </h2>
-        <ul className="list-inside list-disc space-y-2">
-          <li>30+ pages with responsive layouts</li>
-          <li>Product catalog with categories, subcategories, and brands</li>
-          <li>Shopping cart with slide-out drawer</li>
-          <li>Pluggable checkout provider (connect any payment system)</li>
-          <li>Search modal with instant results</li>
-          <li>Wishlist and recently viewed products</li>
-          <li>Authentication with protected routes</li>
-          <li>Full SEO setup (metadata, structured data, sitemap)</li>
-          <li>Accessibility compliant (WCAG best practices)</li>
-          <li>Internationalization ready (next-intl with EN/ES)</li>
-          <li>Theme variables for easy rebranding</li>
-        </ul>
-
-        <h2 className="!mt-12 text-xl font-semibold text-foreground">
-          Need a Developer?
-        </h2>
         <p>
-          This template is free to use, modify, and deploy. If you need help
-          customizing it, integrating a payment provider, or building something
-          more complex, our team is here to help.{" "}
-          <Link href="/contact" className="underline hover:text-foreground">
-            Get in touch
-          </Link>{" "}
-          or visit{" "}
-          <a
-            href="https://epicdesignlabs.com"
-            target="_blank"
-            rel="noopener"
-            className="underline hover:text-foreground"
-          >
-            epicdesignlabs.com
-          </a>
-          .
+          Le projet évolue progressivement : la sécurité des comptes, la
+          confidentialité des adresses et la clarté des informations sont
+          prioritaires avant toute ouverture commerciale.
         </p>
+        <div className="rounded-xl border bg-muted/30 p-5">
+          <h2 className="font-semibold text-foreground">Découvrir le prototype</h2>
+          <p className="mt-2 text-sm">
+            Parcours les annonces de la communauté ou consulte les questions
+            fréquentes pour connaître les fonctions déjà disponibles.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Link href="/annonces" className="text-sm font-medium text-violet-700 underline">Voir les annonces</Link>
+            <Link href="/faq" className="text-sm font-medium text-violet-700 underline">Questions fréquentes</Link>
+          </div>
+        </div>
       </div>
     </div>
   )

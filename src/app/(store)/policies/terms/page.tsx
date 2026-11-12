@@ -1,66 +1,65 @@
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Terms of Service",
-  description: "Terms and conditions for using our website and services.",
+  title: "Conditions d'utilisation",
+  description: "Informations de démonstration sur les règles du prototype GoWill.",
 }
 
 export default function TermsPage() {
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-      <h1 className="text-3xl font-bold tracking-tight">Terms of Service</h1>
+      <p className="text-sm font-semibold text-violet-700">Prototype</p>
+      <h1 className="mt-2 text-3xl font-bold tracking-tight">Conditions d'utilisation</h1>
       <p className="mt-4 text-sm text-muted-foreground">
-        Last updated: January 1, 2025
+        Informations provisoires — ce texte n'est pas encore un document
+        contractuel de vente.
       </p>
       <div className="mt-8 space-y-6 text-muted-foreground">
-        <h2 className="text-xl font-semibold text-foreground">
-          Acceptance of Terms
-        </h2>
-        <p>
-          By accessing and using this website, you accept and agree to be bound
-          by these Terms of Service. If you do not agree, please do not use our
-          services.
-        </p>
-
-        <h2 className="text-xl font-semibold text-foreground">
-          Use of Service
-        </h2>
-        <p>
-          You agree to use our services only for lawful purposes and in
-          accordance with these terms. You are responsible for maintaining the
-          confidentiality of your account credentials.
-        </p>
-
-        <h2 className="text-xl font-semibold text-foreground">
-          Products and Pricing
-        </h2>
-        <p>
-          We strive to display accurate product information and pricing.
-          However, errors may occur. We reserve the right to correct any errors
-          and to cancel orders placed at incorrect prices.
-        </p>
-
-        <h2 className="text-xl font-semibold text-foreground">
-          Intellectual Property
-        </h2>
-        <p>
-          All content on this website, including text, images, and logos, is
-          protected by intellectual property laws. You may not reproduce or
-          distribute any content without our written permission.
-        </p>
-
-        <h2 className="text-xl font-semibold text-foreground">
-          Limitation of Liability
-        </h2>
-        <p>
-          To the fullest extent permitted by law, we shall not be liable for
-          any indirect, incidental, or consequential damages arising from your
-          use of our services.
-        </p>
-
-        <h2 className="text-xl font-semibold text-foreground">Contact</h2>
-        <p>
-          For questions about these terms, contact us at legal@store.com.
+        <section className="space-y-2">
+          <h2 className="text-xl font-semibold text-foreground">Utilisation du prototype</h2>
+          <p>
+            GoWill est un prototype en développement destiné à tester la
+            consultation d'annonces, la publication de produits, les favoris et
+            les échanges entre membres. Les fonctions de paiement et de commande
+            réelle ne sont pas activées.
+          </p>
+        </section>
+        <section className="space-y-2">
+          <h2 className="text-xl font-semibold text-foreground">Annonces et contenus</h2>
+          <p>
+            Les membres doivent publier des informations exactes et disposer
+            des droits nécessaires sur les textes et les photos qu'ils ajoutent.
+            Les annonces illicites, trompeuses ou portant sur des produits
+            interdits ou réglementés ne sont pas autorisées sur le prototype.
+          </p>
+          <p>
+            Une annonce peut être retirée si elle enfreint les règles du site.
+            Les vérifications automatiques ne remplacent pas la modération
+            humaine ni les obligations applicables.
+          </p>
+        </section>
+        <section className="space-y-2">
+          <h2 className="text-xl font-semibold text-foreground">Prix et expédition</h2>
+          <p>
+            Les prix et frais saisis dans les annonces sont des informations
+            déclarées par leurs auteurs. Les devis éventuels sont indicatifs
+            tant qu'aucun service de réservation ou d'expédition n'est activé.
+            Aucun paiement, remboursement ou suivi de colis n'est exécuté par
+            cette version.
+          </p>
+        </section>
+        <section className="space-y-2">
+          <h2 className="text-xl font-semibold text-foreground">Avant toute ouverture publique</h2>
+          <p>
+            Les règles contractuelles, les responsabilités de la plateforme et
+            des vendeurs, la gestion des litiges, les conditions de vente et
+            les informations de l'éditeur devront être définies et vérifiées
+            avec un adulte responsable et un professionnel compétent.
+          </p>
+        </section>
+        <p className="rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
+          Ne réalise aucune transaction réelle sur la base de cette page ou de
+          l'aperçu de commande actuel.
         </p>
       </div>
     </div>
