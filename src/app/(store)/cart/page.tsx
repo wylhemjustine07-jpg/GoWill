@@ -49,7 +49,7 @@ export default function CartPage() {
     <div className="mx-auto max-w-3xl px-4 py-8 pb-16 sm:px-6 sm:py-16 lg:px-8">
       <PageHeader title="Mon panier" />
       <p className="mt-2 text-sm text-muted-foreground">
-        Les annonces correspondent à des articles uniques. Les frais d'expédition sont des estimations tant qu'un transporteur n'a pas confirmé un devis.
+        Les annonces correspondent à des articles uniques. Les frais d&apos;expédition sont des estimations tant qu&apos;un transporteur n&apos;a pas confirmé un devis.
       </p>
       <div className="mt-8">
         <div className="divide-y">
