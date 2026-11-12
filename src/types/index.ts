@@ -173,6 +173,7 @@ export interface OrderLineItem {
   total: number
   sellerId?: string
   shippingOrigin?: string | null
+  shippingOriginCountryCode?: string | null
   shippingFeeAmount?: number
   shippingFeePayer?: ShippingFeePayer
   shipsInternationally?: boolean
