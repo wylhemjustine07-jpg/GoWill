@@ -325,7 +325,7 @@ export default function CheckoutPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold tracking-tight">Choisir la livraison</h1>
-      <p className="mt-2 text-sm text-muted-foreground">GoWill est conçu pour des achats entre pays. Indique le pays et l'adresse de destination ; les transporteurs et tarifs internationaux réels ne sont pas encore connectés.</p>
+      <p className="mt-2 text-sm text-muted-foreground">GoWill est conçu pour des achats entre pays. Indique le pays et l&apos;adresse de destination ; les transporteurs et tarifs internationaux réels ne sont pas encore connectés.</p>
 
       <form onSubmit={handleSubmit} className="mt-8 grid gap-8 lg:grid-cols-5">
         <div className="space-y-8 lg:col-span-3">
@@ -380,7 +380,7 @@ export default function CheckoutPage() {
                     <div className="space-y-2"><Label htmlFor="relayCity">Ville</Label><Input id="relayCity" name="relayCity" value={form.relayCity} onChange={handleChange} required /></div>
                     <div className="space-y-2"><Label htmlFor="relayPostalCode2">Code postal</Label><Input id="relayPostalCode2" name="relayPostalCode" value={form.relayPostalCode} onChange={handleChange} required /></div>
                   </div>
-                  <p className="text-xs text-amber-700">Prototype international : la carte indique uniquement la zone du code postal. Le nom et l'adresse du relais sont saisis manuellement ; aucune liste officielle, disponibilité, étiquette ou expédition de transporteur n'est encore connectée. Vérifie le relais auprès du transporteur avant toute utilisation réelle.</p>
+                  <p className="text-xs text-amber-700">Prototype international : la carte indique uniquement la zone du code postal. Le nom et l'adresse du relais sont saisis manuellement ; aucune liste officielle, disponibilité, étiquette ou expédition de transporteur n&apos;est encore connectée. Vérifie le relais auprès du transporteur avant toute utilisation réelle.</p>
                 </div>
               )}
             </CardContent>
@@ -421,7 +421,7 @@ export default function CheckoutPage() {
                           <span className="font-semibold">{formatPrice(Math.round(rate.amount * 100))}</span>
                         </label>
                       ))}
-                      {availableRates && availableRates.length === 0 && <p className="text-xs text-muted-foreground">Aucun tarif en euros trouvé pour cette route. L'estimation du vendeur reste affichée.</p>}
+                      {availableRates && availableRates.length === 0 && <p className="text-xs text-muted-foreground">Aucun tarif en euros trouvé pour cette route. L&apos;estimation du vendeur reste affichée.</p>}
                       {selectedRate && <p className="text-xs text-emerald-700">Tarif transporteur sélectionné : {selectedRate.provider} · {selectedRate.service}</p>}
                     </div>
                   )}
