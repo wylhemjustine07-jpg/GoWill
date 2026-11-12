@@ -1,6 +1,6 @@
 "use client"
 
-import { FormEvent, useEffect, useState } from "react"
+import { FormEvent, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,23 +11,25 @@ import { useAuthStore } from "@/store/auth"
 import { createClient } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import { passwordSchema } from "@/lib/validators"
+import type { User } from "@/types"
 
 export default function SettingsPage() {
   const { user, isReady } = useAuthGuard()
+
+  if (!isReady || !user) return null
+
+  return <SettingsContent user={user} />
+}
+
+function SettingsContent({ user }: { user: User }) {
   const updateProfile = useAuthStore((s) => s.updateProfile)
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
+  const [firstName, setFirstName] = useState(user.firstName)
+  const [lastName, setLastName] = useState(user.lastName)
   const [savingProfile, setSavingProfile] = useState(false)
   const [currentPassword, setCurrentPassword] = useState("")
   const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [savingPassword, setSavingPassword] = useState(false)
-
-  useEffect(() => {
-    if (!user) return
-    setFirstName(user.firstName)
-    setLastName(user.lastName)
-  }, [user])
 
   async function handleSaveProfile(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -35,16 +37,22 @@ export default function SettingsPage() {
       toast.error("Indique ton prénom et ton nom.")
       return
     }
+
     setSavingProfile(true)
-    const success = await updateProfile({ firstName: firstName.trim(), lastName: lastName.trim() })
+    const success = await updateProfile({
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+    })
     setSavingProfile(false)
+
     if (success) toast.success("Profil enregistré.")
     else toast.error("Impossible d'enregistrer le profil. Réessaie.")
   }
 
   async function handleChangePassword(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!user?.email) return
+    if (!user.email) return
+
     const passwordValidation = passwordSchema.safeParse(newPassword)
     if (!passwordValidation.success) {
       toast.error(passwordValidation.error.issues[0].message)
@@ -54,30 +62,33 @@ export default function SettingsPage() {
       toast.error("Les deux nouveaux mots de passe ne correspondent pas.")
       return
     }
+
     setSavingPassword(true)
     const supabase = createClient()
     const { error: verificationError } = await supabase.auth.signInWithPassword({
       email: user.email,
       password: currentPassword,
     })
+
     if (verificationError) {
       setSavingPassword(false)
       toast.error("Le mot de passe actuel est incorrect.")
       return
     }
+
     const { error } = await supabase.auth.updateUser({ password: newPassword })
     setSavingPassword(false)
+
     if (error) {
       toast.error(error.message || "Impossible de modifier le mot de passe.")
       return
     }
+
     setCurrentPassword("")
     setNewPassword("")
     setConfirmPassword("")
     toast.success("Mot de passe modifié.")
   }
-
-  if (!isReady) return null
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
@@ -92,13 +103,14 @@ export default function SettingsPage() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Adresse e-mail</Label>
-              <Input id="email" type="email" value={user?.email ?? ""} readOnly disabled />
-              <p className="text-xs text-muted-foreground">L'adresse e-mail est gérée par le système de connexion du compte.</p>
+              <Input id="email" type="email" value={user.email} readOnly disabled />
+              <p className="text-xs text-muted-foreground">L&apos;adresse e-mail est gérée par le système de connexion du compte.</p>
             </div>
             <Button type="submit" disabled={savingProfile}>{savingProfile ? "Enregistrement..." : "Enregistrer le profil"}</Button>
           </form>
         </CardContent>
       </Card>
+
       <Card className="mt-8">
         <CardHeader><CardTitle>Changer le mot de passe</CardTitle></CardHeader>
         <CardContent>
