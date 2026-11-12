@@ -119,7 +119,7 @@ export default function AnnonceDetailPage() {
               </Button>
             </div>
           )}
-          <p className="mt-3 text-center text-xs text-muted-foreground">Ajoute l&apos;article à ton panier pour passer à l'étape de livraison, ou contacte le vendeur pour poser une question.</p>
+          <p className="mt-3 text-center text-xs text-muted-foreground">Ajoute l&apos;article à ton panier pour passer à l&apos;étape de livraison, ou contacte le vendeur pour poser une question.</p>
         </div>
       </div>
     </section>
