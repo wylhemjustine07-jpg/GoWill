@@ -1,6 +1,6 @@
 "use client"
 
-import { FormEvent, useCallback, useEffect, useState } from "react"
+import { FormEvent, useEffect, useState } from "react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { useAuthGuard } from "@/hooks/use-auth-guard"
@@ -42,36 +42,36 @@ export default function SellerShippingOriginPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
-  const loadOrigin = useCallback(async () => {
-    if (!user) return
-    const { data, error } = await createClient()
+  useEffect(() => {
+    if (!isReady || !user) return
+    let active = true
+    void createClient()
       .from("seller_shipping_origins")
       .select("contact_name,email,phone,street1,street2,city,state,postal_code,country,country_code")
       .eq("seller_id", user.id)
       .maybeSingle()
-
-    if (error) {
-      toast.error("Impossible de charger l'adresse d'expédition.")
-    } else if (data) {
-      setForm({
-        contactName: data.contact_name,
-        email: data.email,
-        phone: data.phone,
-        street1: data.street1,
-        street2: data.street2 ?? "",
-        city: data.city,
-        state: data.state ?? "",
-        postalCode: data.postal_code,
-        country: data.country,
-        countryCode: data.country_code,
+      .then(({ data, error }) => {
+        if (!active) return
+        if (error) {
+          toast.error("Impossible de charger l'adresse d'expédition.")
+        } else if (data) {
+          setForm({
+            contactName: data.contact_name,
+            email: data.email,
+            phone: data.phone,
+            street1: data.street1,
+            street2: data.street2 ?? "",
+            city: data.city,
+            state: data.state ?? "",
+            postalCode: data.postal_code,
+            country: data.country,
+            countryCode: data.country_code,
+          })
+        }
+        setLoading(false)
       })
-    }
-    setLoading(false)
-  }, [user])
-
-  useEffect(() => {
-    if (isReady && user) void loadOrigin()
-  }, [isReady, user, loadOrigin])
+    return () => { active = false }
+  }, [isReady, user])
 
   function update(field: keyof OriginForm, value: string) {
     setForm((current) => ({ ...current, [field]: value }))
