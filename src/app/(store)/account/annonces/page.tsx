@@ -45,7 +45,10 @@ export default function MesAnnoncesPage() {
     <section className="mx-auto max-w-4xl px-4 py-12 sm:px-6">
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div><p className="text-sm font-semibold text-violet-700">Espace vendeur</p><h1 className="mt-2 text-3xl font-bold">Mes annonces</h1><p className="mt-2 text-muted-foreground">Gère les produits que tu proposes sur GoWill.</p></div>
-        <Button asChild><Link href="/deposer">Déposer une annonce</Link></Button>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline"><Link href="/account/expedition">Mon adresse d'expédition</Link></Button>
+          <Button asChild><Link href="/deposer">Déposer une annonce</Link></Button>
+        </div>
       </div>
       {loading ? <p className="py-16 text-center text-muted-foreground">Chargement...</p> :
         listings.length === 0 ? <div className="mt-8 rounded-xl border border-dashed p-10 text-center"><h2 className="font-semibold">Tu n'as pas encore d'annonce</h2><p className="mt-2 text-sm text-muted-foreground">Publie ton premier produit pour commencer à vendre.</p><Button asChild className="mt-5"><Link href="/deposer">Créer une annonce</Link></Button></div> :
