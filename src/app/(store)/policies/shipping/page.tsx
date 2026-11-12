@@ -13,13 +13,13 @@ export default function ShippingPolicyPage() {
         <section className="space-y-2">
           <h2 className="text-xl font-semibold text-foreground">Une marketplace entre pays</h2>
           <p>Les vendeurs indiquent la ville et le pays depuis lesquels ils expédient chaque article. Ils peuvent accepter les demandes internationales ou limiter leur annonce aux acheteurs de leur pays.</p>
-          <p>Une destination internationale n'est pas automatiquement desservie : la possibilité d'expédier dépend du vendeur, du pays de départ, du pays de destination, du produit et des services de transport disponibles sur cette route.</p>
+          <p>Une destination internationale n&apos;est pas automatiquement desservie : la possibilité d&apos;expédier dépend du vendeur, du pays de départ, du pays de destination, du produit et des services de transport disponibles sur cette route.</p>
         </section>
 
         <section className="space-y-2">
-          <h2 className="text-xl font-semibold text-foreground">Frais d'expédition affichés</h2>
+          <h2 className="text-xl font-semibold text-foreground">Frais d&apos;expédition affichés</h2>
           <p>Le vendeur peut saisir une estimation en euros et choisir qui prend les frais en charge : l'acheteur à 100 %, le vendeur à 100 %, ou chacun à 50 %.</p>
-          <p>Ces montants sont des estimations déclarées par les vendeurs. Ils ne sont pas encore calculés ou confirmés par un transporteur et peuvent différer du coût réel d'un envoi.</p>
+          <p>Ces montants sont des estimations déclarées par les vendeurs. Ils ne sont pas encore calculés ou confirmés par un transporteur et peuvent différer du coût réel d&apos;un envoi.</p>
         </section>
 
         <section className="space-y-2">
@@ -34,7 +34,7 @@ export default function ShippingPolicyPage() {
         </section>
 
         <section className="rounded-xl border border-amber-300/60 bg-amber-50 p-4 text-sm text-amber-900">
-          GoWill est actuellement en mode démonstration pour le checkout : aucun paiement réel n'est traité, aucune commande n'est transmise au vendeur et aucune expédition n'est déclenchée.
+          GoWill est actuellement en mode démonstration pour le checkout : aucun paiement réel n&apos;est traité, aucune commande n'est transmise au vendeur et aucune expédition n'est déclenchée.
         </section>
       </div>
     </div>
