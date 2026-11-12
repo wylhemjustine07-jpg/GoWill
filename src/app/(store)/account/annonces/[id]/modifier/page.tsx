@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useAuthGuard } from "@/hooks/use-auth-guard"
 import { createClient } from "@/lib/supabase/client"
+import { getListingPolicyError } from "@/lib/listing-policy"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -64,6 +65,8 @@ export default function ModifierAnnoncePage() {
     if (!user) return
     const price = Number(form.price.replace(",", "."))
     if (!Number.isFinite(price) || price < 0) { toast.error("Indique un prix valide."); return }
+    const listingPolicyError = getListingPolicyError(form.title, form.description, form.category)
+    if (listingPolicyError) { toast.error(listingPolicyError); return }
     if (!form.shippingCity.trim() || !form.shippingCountry.trim()) {
       toast.error("Indique la ville et le pays depuis lesquels tu expédies l'article.")
       return
