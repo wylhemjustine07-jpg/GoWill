@@ -1,6 +1,7 @@
 "use client"
 
-import { Suspense, useEffect, useState } from "react"
+import { Suspense } from "react"
+import { useMounted } from "@/hooks/use-mounted"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -18,8 +19,7 @@ function CheckoutSuccessContent() {
   const searchParams = useSearchParams()
   const orderId = searchParams.get("order_id")
   const getOrderById = useOrdersStore((s) => s.getOrderById)
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+  const mounted = useMounted()
 
   if (!mounted) return <div className="mx-auto max-w-3xl px-4 py-16 text-center"><h1 className="text-3xl font-bold">Chargement...</h1></div>
 
@@ -30,7 +30,7 @@ function CheckoutSuccessContent() {
       <div className="flex flex-col items-center text-center">
         <Info className="h-14 w-14 text-primary" />
         <h1 className="mt-6 text-3xl font-bold tracking-tight">Aperçu de commande créé</h1>
-        <p className="mt-4 max-w-xl text-muted-foreground">Cette démonstration est enregistrée uniquement dans le stockage local de ce navigateur. Les frais sont des estimations saisies par les vendeurs ; aucune commande n'a été envoyée, aucun paiement n'a été effectué et aucun colis ne sera expédié.</p>
+        <p className="mt-4 max-w-xl text-muted-foreground">Cette démonstration est enregistrée uniquement dans le stockage local de ce navigateur. Les frais sont des estimations saisies par les vendeurs ; aucune commande n&apos;a été envoyée, aucun paiement n&apos;a été effectué et aucun colis ne sera expédié.</p>
 
         {order && (
           <Card className="mt-8 w-full text-left">
