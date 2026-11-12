@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useAuthGuard } from "@/hooks/use-auth-guard"
 import { createClient } from "@/lib/supabase/client"
+import { getListingPolicyError } from "@/lib/listing-policy"
 
 const categories = ["Mode", "Maison", "High-tech", "Téléphones", "Jeux vidéo", "Sports et loisirs", "Beauté", "Livres", "Jouets", "Autre"]
 
@@ -44,6 +45,8 @@ export default function DeposerPage() {
       toast.error("Indique un prix valide.")
       return
     }
+    const listingPolicyError = getListingPolicyError(form.title, form.description, form.category)
+    if (listingPolicyError) { toast.error(listingPolicyError); return }
     if (!form.shippingCity.trim() || !form.shippingCountry.trim()) {
       toast.error("Indique la ville et le pays depuis lesquels tu expédies l'article.")
       return
