@@ -83,7 +83,7 @@ export default function AnnonceDetailPage() {
     if (conversationId) router.push(`/messages/${conversationId}`)
   }
 
-  if (loading) return <p className="py-24 text-center text-muted-foreground">Chargement de l'annonce...</p>
+  if (loading) return <p className="py-24 text-center text-muted-foreground">Chargement de l&apos;annonce...</p>
   if (!listing) return <section className="mx-auto max-w-2xl px-4 py-24 text-center"><h1 className="text-2xl font-bold">Annonce introuvable</h1><Link className="mt-4 inline-block text-violet-700 underline" href="/annonces">Retour aux annonces</Link></section>
 
   return (
@@ -119,7 +119,7 @@ export default function AnnonceDetailPage() {
               </Button>
             </div>
           )}
-          <p className="mt-3 text-center text-xs text-muted-foreground">Ajoute l'article à ton panier pour passer à l'étape de livraison, ou contacte le vendeur pour poser une question.</p>
+          <p className="mt-3 text-center text-xs text-muted-foreground">Ajoute l&apos;article à ton panier pour passer à l'étape de livraison, ou contacte le vendeur pour poser une question.</p>
         </div>
       </div>
     </section>
