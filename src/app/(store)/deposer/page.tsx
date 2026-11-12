@@ -189,7 +189,7 @@ export default function DeposerPage() {
           <span><span className="font-medium">J&apos;accepte les commandes internationales</span><span className="mt-1 block text-xs text-muted-foreground">Décoche cette case pour limiter l&apos;annonce aux acheteurs de ton pays. La couverture dépendra toujours des transporteurs disponibles.</span></span>
         </label>
         <div className="space-y-2">
-          <Label htmlFor="images">Photos (jusqu'à 5)</Label>
+          <Label htmlFor="images">Photos (jusqu&apos;à 5)</Label>
           <input id="images" type="file" accept="image/*" multiple onChange={(e) => selectImages(e.target.files)} className="block w-full rounded-md border p-3 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-neutral-100 file:px-3 file:py-2" />
           <p className="text-xs text-muted-foreground">{images.length} photo(s) sélectionnée(s), 5 Mo maximum par photo.</p>
         </div>
