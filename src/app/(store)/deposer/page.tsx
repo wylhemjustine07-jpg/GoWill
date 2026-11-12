@@ -15,7 +15,7 @@ const categories = ["Mode", "Maison", "High-tech", "Téléphones", "Jeux vidéo"
 export default function DeposerPage() {
   const router = useRouter()
   const { user, isReady } = useAuthGuard()
-  const [form, setForm] = useState({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "", shippingFee: "", shippingFeePayer: "buyer" as "buyer" | "seller" | "split", shipsInternationally: true })
+  const [form, setForm] = useState({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "", shippingFee: "", shippingFeePayer: "buyer" as "buyer" | "seller" | "split", shipsInternationally: true, parcelWeightKg: "0.5", parcelLengthCm: "20", parcelWidthCm: "15", parcelHeightCm: "10" })
   const [images, setImages] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -53,6 +53,16 @@ export default function DeposerPage() {
       toast.error("Indique une estimation de frais d'expédition valide.")
       return
     }
+    const parcelWeightKg = Number(form.parcelWeightKg)
+    const parcelLengthCm = Number(form.parcelLengthCm)
+    const parcelWidthCm = Number(form.parcelWidthCm)
+    const parcelHeightCm = Number(form.parcelHeightCm)
+    if (![parcelWeightKg, parcelLengthCm, parcelWidthCm, parcelHeightCm].every(Number.isFinite)
+      || parcelWeightKg <= 0 || parcelWeightKg > 70
+      || [parcelLengthCm, parcelWidthCm, parcelHeightCm].some((value) => value <= 0 || value > 200)) {
+      toast.error("Vérifie le poids et les dimensions du colis.")
+      return
+    }
     setLoading(true)
     const supabase = createClient()
     const imageUrls: string[] = []
@@ -75,6 +85,10 @@ export default function DeposerPage() {
         shipping_fee_amount: shippingFeeAmount,
         shipping_fee_payer: form.shippingFeePayer,
         ships_internationally: form.shipsInternationally,
+        parcel_weight_kg: parcelWeightKg,
+        parcel_length_cm: parcelLengthCm,
+        parcel_width_cm: parcelWidthCm,
+        parcel_height_cm: parcelHeightCm,
         image_urls: imageUrls,
         status: "active",
       })
@@ -144,6 +158,16 @@ export default function DeposerPage() {
               <option value="split">Partagé à 50 / 50</option>
               <option value="seller">Le vendeur paie 100 %</option>
             </select>
+          </div>
+        </div>
+        <div className="space-y-3 rounded-lg border p-4">
+          <h2 className="text-sm font-semibold">Dimensions du colis prêt à expédier</h2>
+          <p className="text-xs text-muted-foreground">Ces mesures servent à demander des tarifs transporteur. Pèse et mesure le colis emballé, pas seulement l'article.</p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-2"><Label htmlFor="parcelWeightKg">Poids (kg)</Label><Input id="parcelWeightKg" type="number" min="0.01" max="70" step="0.001" value={form.parcelWeightKg} onChange={(e) => update("parcelWeightKg", e.target.value)} required /></div>
+            <div className="space-y-2"><Label htmlFor="parcelLengthCm">Longueur (cm)</Label><Input id="parcelLengthCm" type="number" min="1" max="200" step="0.1" value={form.parcelLengthCm} onChange={(e) => update("parcelLengthCm", e.target.value)} required /></div>
+            <div className="space-y-2"><Label htmlFor="parcelWidthCm">Largeur (cm)</Label><Input id="parcelWidthCm" type="number" min="1" max="200" step="0.1" value={form.parcelWidthCm} onChange={(e) => update("parcelWidthCm", e.target.value)} required /></div>
+            <div className="space-y-2"><Label htmlFor="parcelHeightCm">Hauteur (cm)</Label><Input id="parcelHeightCm" type="number" min="1" max="200" step="0.1" value={form.parcelHeightCm} onChange={(e) => update("parcelHeightCm", e.target.value)} required /></div>
           </div>
         </div>
         <label className="flex items-start gap-3 rounded-lg border p-3 text-sm">
