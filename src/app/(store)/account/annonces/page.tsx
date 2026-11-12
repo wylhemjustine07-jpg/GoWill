@@ -24,7 +24,20 @@ export default function MesAnnoncesPage() {
     setLoading(false)
   }, [user])
 
-  useEffect(() => { if (isReady) void loadListings() }, [isReady, loadListings])
+  useEffect(() => {
+    if (!isReady || !user) return
+    let active = true
+    void createClient().from("listings").select("id,title,price,status,created_at,category,location,shipping_fee_amount,shipping_fee_payer,ships_internationally")
+      .eq("seller_id", user.id)
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (!active) return
+        if (error) toast.error("Impossible de charger tes annonces.")
+        else setListings((data ?? []) as Listing[])
+        setLoading(false)
+      })
+    return () => { active = false }
+  }, [isReady, user])
 
   async function changeStatus(id: string, status: Listing["status"]) {
     const { error } = await createClient().from("listings").update({ status, updated_at: new Date().toISOString() }).eq("id", id)
@@ -46,12 +59,12 @@ export default function MesAnnoncesPage() {
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
         <div><p className="text-sm font-semibold text-violet-700">Espace vendeur</p><h1 className="mt-2 text-3xl font-bold">Mes annonces</h1><p className="mt-2 text-muted-foreground">Gère les produits que tu proposes sur GoWill.</p></div>
         <div className="flex flex-wrap gap-2">
-          <Button asChild variant="outline"><Link href="/account/expedition">Mon adresse d'expédition</Link></Button>
+          <Button asChild variant="outline"><Link href="/account/expedition">Mon adresse d&apos;expédition</Link></Button>
           <Button asChild><Link href="/deposer">Déposer une annonce</Link></Button>
         </div>
       </div>
       {loading ? <p className="py-16 text-center text-muted-foreground">Chargement...</p> :
-        listings.length === 0 ? <div className="mt-8 rounded-xl border border-dashed p-10 text-center"><h2 className="font-semibold">Tu n'as pas encore d'annonce</h2><p className="mt-2 text-sm text-muted-foreground">Publie ton premier produit pour commencer à vendre.</p><Button asChild className="mt-5"><Link href="/deposer">Créer une annonce</Link></Button></div> :
+        listings.length === 0 ? <div className="mt-8 rounded-xl border border-dashed p-10 text-center"><h2 className="font-semibold">Tu n&apos;as pas encore d&apos;annonce</h2><p className="mt-2 text-sm text-muted-foreground">Publie ton premier produit pour commencer à vendre.</p><Button asChild className="mt-5"><Link href="/deposer">Créer une annonce</Link></Button></div> :
         <div className="mt-8 space-y-3">
           {listings.map((listing) => (
             <article key={listing.id} className="flex flex-col gap-4 rounded-xl border bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
