@@ -71,8 +71,8 @@ export default function RegisterPage() {
           <Input id="email" name="email" type="email" autoComplete="email" placeholder="toi@exemple.com" value={form.email} onChange={handleChange} required />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="password">Mot de passe</Label>
-          <Input id="password" name="password" type="password" autoComplete="new-password" minLength={8} value={form.password} onChange={handleChange} required />
+          <Label htmlFor="password">Mot de passe (12 caractères minimum)</Label>
+          <Input id="password" name="password" type="password" autoComplete="new-password" minLength={12} maxLength={128} value={form.password} onChange={handleChange} required />
         </div>
         <div className="space-y-2">
           <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
