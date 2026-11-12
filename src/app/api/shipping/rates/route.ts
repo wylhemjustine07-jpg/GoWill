@@ -71,7 +71,7 @@ export async function POST(request: Request) {
   const { listingId, quantity, destination } = parsed.data
   const { data: listing, error: listingError } = await admin
     .from("listings")
-    .select("id,seller_id,title,status,location,ships_internationally,parcel_weight_kg,parcel_length_cm,parcel_width_cm,parcel_height_cm")
+    .select("id,seller_id,title,status,location,shipping_origin_country_code,ships_internationally,parcel_weight_kg,parcel_length_cm,parcel_width_cm,parcel_height_cm")
     .eq("id", listingId)
     .eq("status", "active")
     .maybeSingle()
@@ -94,6 +94,13 @@ export async function POST(request: Request) {
     return NextResponse.json({
       error: "Le vendeur doit d'abord enregistrer son adresse d'expédition privée.",
       code: "SELLER_ORIGIN_MISSING",
+    }, { status: 409 })
+  }
+
+  if (listing.shipping_origin_country_code && listing.shipping_origin_country_code !== origin.country_code) {
+    return NextResponse.json({
+      error: "Le code pays de l'annonce ne correspond pas à l'adresse d'expédition privée du vendeur.",
+      code: "SELLER_ORIGIN_COUNTRY_MISMATCH",
     }, { status: 409 })
   }
 
