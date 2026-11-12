@@ -27,7 +27,7 @@ export default function DeposerPage() {
   function selectImages(files: FileList | null) {
     const selected = Array.from(files ?? [])
     if (selected.length > 5) {
-      toast.error("Tu peux ajouter jusqu'à 5 photos.")
+      toast.error("Tu peux ajouter jusqu&apos;à 5 photos.")
       return
     }
     if (selected.some((file) => !file.type.startsWith("image/") || file.size > 5 * 1024 * 1024)) {
@@ -163,10 +163,10 @@ export default function DeposerPage() {
           <div className="space-y-2">
             <Label htmlFor="shippingFee">Frais d&apos;expédition estimés (€)</Label>
             <Input id="shippingFee" type="number" min="0" step="0.01" value={form.shippingFee} onChange={(e) => update("shippingFee", e.target.value)} placeholder="0,00" required />
-            <p className="text-xs text-muted-foreground">Indique ton estimation en euros. 0 signifie que tu offres l'expédition.</p>
+            <p className="text-xs text-muted-foreground">Indique ton estimation en euros. 0 signifie que tu offres l&apos;expédition.</p>
           </div>
           <div className="space-y-2">
-            <Label htmlFor="shippingFeePayer">Qui paie l'expédition ?</Label>
+            <Label htmlFor="shippingFeePayer">Qui paie l&apos;expédition ?</Label>
             <select id="shippingFeePayer" value={form.shippingFeePayer} onChange={(e) => setForm((current) => ({ ...current, shippingFeePayer: e.target.value as "buyer" | "seller" | "split" }))} className="h-10 w-full rounded-md border bg-background px-3 text-sm">
               <option value="buyer">L&apos;acheteur paie 100 %</option>
               <option value="split">Partagé à 50 / 50</option>
@@ -176,7 +176,7 @@ export default function DeposerPage() {
         </div>
         <div className="space-y-3 rounded-lg border p-4">
           <h2 className="text-sm font-semibold">Dimensions du colis prêt à expédier</h2>
-          <p className="text-xs text-muted-foreground">Ces mesures servent à demander des tarifs transporteur. Pèse et mesure le colis emballé, pas seulement l'article.</p>
+          <p className="text-xs text-muted-foreground">Ces mesures servent à demander des tarifs transporteur. Pèse et mesure le colis emballé, pas seulement l&apos;article.</p>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-2"><Label htmlFor="parcelWeightKg">Poids (kg)</Label><Input id="parcelWeightKg" type="number" min="0.01" max="70" step="0.001" value={form.parcelWeightKg} onChange={(e) => update("parcelWeightKg", e.target.value)} required /></div>
             <div className="space-y-2"><Label htmlFor="parcelLengthCm">Longueur (cm)</Label><Input id="parcelLengthCm" type="number" min="1" max="200" step="0.1" value={form.parcelLengthCm} onChange={(e) => update("parcelLengthCm", e.target.value)} required /></div>
@@ -186,7 +186,7 @@ export default function DeposerPage() {
         </div>
         <label className="flex items-start gap-3 rounded-lg border p-3 text-sm">
           <input type="checkbox" checked={form.shipsInternationally} onChange={(e) => setForm((current) => ({ ...current, shipsInternationally: e.target.checked }))} className="mt-1 h-4 w-4" />
-          <span><span className="font-medium">J&apos;accepte les commandes internationales</span><span className="mt-1 block text-xs text-muted-foreground">Décoche cette case pour limiter l'annonce aux acheteurs de ton pays. La couverture dépendra toujours des transporteurs disponibles.</span></span>
+          <span><span className="font-medium">J&apos;accepte les commandes internationales</span><span className="mt-1 block text-xs text-muted-foreground">Décoche cette case pour limiter l&apos;annonce aux acheteurs de ton pays. La couverture dépendra toujours des transporteurs disponibles.</span></span>
         </label>
         <div className="space-y-2">
           <Label htmlFor="images">Photos (jusqu'à 5)</Label>
