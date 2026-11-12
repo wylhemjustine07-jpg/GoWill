@@ -380,7 +380,7 @@ export default function CheckoutPage() {
                     <div className="space-y-2"><Label htmlFor="relayCity">Ville</Label><Input id="relayCity" name="relayCity" value={form.relayCity} onChange={handleChange} required /></div>
                     <div className="space-y-2"><Label htmlFor="relayPostalCode2">Code postal</Label><Input id="relayPostalCode2" name="relayPostalCode" value={form.relayPostalCode} onChange={handleChange} required /></div>
                   </div>
-                  <p className="text-xs text-amber-700">Prototype international : la carte indique uniquement la zone du code postal. Le nom et l'adresse du relais sont saisis manuellement ; aucune liste officielle, disponibilité, étiquette ou expédition de transporteur n&apos;est encore connectée. Vérifie le relais auprès du transporteur avant toute utilisation réelle.</p>
+                  <p className="text-xs text-amber-700">Prototype international : la carte indique uniquement la zone du code postal. Le nom et l&apos;adresse du relais sont saisis manuellement ; aucune liste officielle, disponibilité, étiquette ou expédition de transporteur n&apos;est encore connectée. Vérifie le relais auprès du transporteur avant toute utilisation réelle.</p>
                 </div>
               )}
             </CardContent>
@@ -425,14 +425,14 @@ export default function CheckoutPage() {
                       {selectedRate && <p className="text-xs text-emerald-700">Tarif transporteur sélectionné : {selectedRate.provider} · {selectedRate.service}</p>}
                     </div>
                   )}
-                  {item.sellerId && deliveryMethod === "relay" && <p className="text-xs text-muted-foreground">Le devis transporteur pour les points relais n'est pas encore intégré ; l'estimation du vendeur est utilisée.</p>}
+                  {item.sellerId && deliveryMethod === "relay" && <p className="text-xs text-muted-foreground">Le devis transporteur pour les points relais n&apos;est pas encore intégré ; l&apos;estimation du vendeur est utilisée.</p>}
                 </div>
               })}
               <Separator />
               <CartSummary subtotal={subtotal} shipping={shippingEstimate} />
               <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground"><PackageCheck className="mr-2 inline h-4 w-4" />Mode choisi : {deliveryMethod === "home" ? "Livraison à domicile" : "Point relais"}</div>
               <Button type="submit" size="lg" className="w-full" disabled={loading}>{loading ? "Préparation..." : "Voir l'aperçu de commande"}</Button>
-              <p className="text-center text-xs text-muted-foreground">Les devis Shippo disponibles sont des tarifs transporteur ; sinon, l'estimation du vendeur est utilisée. Les douanes et taxes d'importation restent exclues.</p>
+              <p className="text-center text-xs text-muted-foreground">Les devis Shippo disponibles sont des tarifs transporteur ; sinon, l'estimation du vendeur est utilisée. Les douanes et taxes d&apos;importation restent exclues.</p>
             </CardContent>
           </Card>
         </div>
