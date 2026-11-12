@@ -20,6 +20,7 @@ type Listing = {
   image_urls: string[]
   created_at: string
   seller_id: string
+  shipping_origin_country_code: string | null
   shipping_fee_amount: number
   shipping_fee_payer: "buyer" | "seller" | "split"
   ships_internationally: boolean
@@ -34,7 +35,7 @@ export default function AnnoncesPage() {
 
   useEffect(() => {
     let active = true
-    createClient().from("listings").select("id,title,description,price,category,item_condition,location,image_urls,created_at,seller_id,shipping_fee_amount,shipping_fee_payer,ships_internationally").eq("status", "active").order("created_at", { ascending: false }).limit(60)
+    createClient().from("listings").select("id,title,description,price,category,item_condition,location,image_urls,created_at,seller_id,shipping_origin_country_code,shipping_fee_amount,shipping_fee_payer,ships_internationally").eq("status", "active").order("created_at", { ascending: false }).limit(60)
       .then(({ data, error }) => {
         if (!active) return
         if (!error && data) setListings(data as Listing[])
