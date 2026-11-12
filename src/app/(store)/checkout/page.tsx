@@ -15,7 +15,7 @@ import { CartSummary } from "@/components/cart/cart-summary"
 import { formatPrice } from "@/lib/utils"
 import { toast } from "sonner"
 import { siteConfig } from "@/lib/config"
-import { calculateCartShipping, getBuyerShippingShare, getOriginCountry, normalizeCountry } from "@/lib/shipping"
+import { calculateCartShipping, getBuyerShippingShare } from "@/lib/shipping"
 import type { Order } from "@/types"
 
 type DeliveryMethod = "home" | "relay"
@@ -220,10 +220,16 @@ export default function CheckoutPage() {
       return
     }
 
+    const destinationCountryCode = form.countryCode.trim().toUpperCase()
+    if (!/^[A-Z]{2}$/.test(destinationCountryCode)) {
+      toast.error("Indique le code pays ISO de destination à deux lettres.")
+      return
+    }
+
     const blockedListing = items.find((item) => {
       if (!item.sellerId || item.shipsInternationally !== false) return false
-      const originCountry = getOriginCountry(item.shippingOrigin)
-      return originCountry !== "" && normalizeCountry(originCountry) !== normalizeCountry(form.country)
+      const originCountryCode = item.shippingOriginCountryCode?.trim().toUpperCase()
+      return !originCountryCode || originCountryCode !== destinationCountryCode
     })
     if (blockedListing) {
       toast.error(`Le vendeur de « ${blockedListing.name} » n'autorise pas l'expédition vers ce pays.`)
