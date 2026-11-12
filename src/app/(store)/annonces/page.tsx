@@ -192,7 +192,7 @@ export default async function AnnoncesPage({ searchParams }: { searchParams: Sea
       ) : listings.length === 0 ? (
         <div className="mt-6 rounded-xl border border-dashed p-12 text-center">
           <h2 className="text-xl font-semibold">Aucune annonce ne correspond</h2>
-          <p className="mt-2 text-sm text-muted-foreground">Essaie d'autres filtres ou publie la première annonce.</p>
+          <p className="mt-2 text-sm text-muted-foreground">Essaie d&apos;autres filtres ou publie la première annonce.</p>
           <Button asChild className="mt-5"><Link href="/deposer">Déposer une annonce</Link></Button>
         </div>
       ) : (
