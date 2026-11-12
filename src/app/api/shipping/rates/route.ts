@@ -26,7 +26,10 @@ const quoteSchema = z.object({
 type ShippoRate = {
   object_id?: string
   provider?: string
-  servicelevel_name?: string
+  servicelevel?: {
+    name?: string
+    terms?: string
+  }
   amount?: string
   currency?: string
   estimated_days?: number | null
@@ -173,15 +176,15 @@ export async function POST(request: Request) {
 
   const shipment = await shippoResponse.json() as { rates?: ShippoRate[]; status?: string }
   const rates = (shipment.rates ?? [])
-    .filter((rate) => rate.object_id && rate.provider && rate.servicelevel_name && rate.amount && rate.currency === "EUR")
+    .filter((rate) => rate.object_id && rate.provider && rate.servicelevel?.name && rate.amount && rate.currency === "EUR")
     .map((rate) => ({
       rateId: rate.object_id as string,
       provider: rate.provider as string,
-      service: rate.servicelevel_name as string,
+      service: rate.servicelevel?.name as string,
       amount: Number(rate.amount),
       currency: "EUR",
       estimatedDays: rate.estimated_days ?? null,
-      durationTerms: rate.duration_terms ?? "",
+      durationTerms: rate.duration_terms ?? rate.servicelevel?.terms ?? "",
     }))
     .filter((rate) => Number.isFinite(rate.amount) && rate.amount >= 0)
     .sort((a, b) => a.amount - b.amount)
