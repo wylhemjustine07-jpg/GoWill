@@ -16,7 +16,7 @@ const categories = ["Mode", "Maison", "High-tech", "Téléphones", "Jeux vidéo"
 export default function DeposerPage() {
   const router = useRouter()
   const { user, isReady } = useAuthGuard()
-  const [form, setForm] = useState({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "", shippingFee: "", shippingFeePayer: "buyer" as "buyer" | "seller" | "split", shipsInternationally: true, parcelWeightKg: "0.5", parcelLengthCm: "20", parcelWidthCm: "15", parcelHeightCm: "10" })
+  const [form, setForm] = useState({ title: "", description: "", price: "", category: "Mode", item_condition: "good", shippingCity: "", shippingCountry: "", shippingCountryCode: "", shippingFee: "", shippingFeePayer: "buyer" as "buyer" | "seller" | "split", shipsInternationally: true, parcelWeightKg: "0.5", parcelLengthCm: "20", parcelWidthCm: "15", parcelHeightCm: "10" })
   const [images, setImages] = useState<File[]>([])
   const [loading, setLoading] = useState(false)
 
@@ -49,6 +49,11 @@ export default function DeposerPage() {
     if (listingPolicyError) { toast.error(listingPolicyError); return }
     if (!form.shippingCity.trim() || !form.shippingCountry.trim()) {
       toast.error("Indique la ville et le pays depuis lesquels tu expédies l'article.")
+      return
+    }
+    const shippingCountryCode = form.shippingCountryCode.trim().toUpperCase()
+    if (!/^[A-Z]{2}$/.test(shippingCountryCode)) {
+      toast.error("Indique le code pays ISO à deux lettres, par exemple FR, GP ou JP.")
       return
     }
     const shippingFeeAmount = Number(form.shippingFee.replace(",", "."))
@@ -85,6 +90,7 @@ export default function DeposerPage() {
         category: form.category,
         item_condition: form.item_condition,
         location: `${form.shippingCity.trim()}, ${form.shippingCountry.trim()}`,
+        shipping_origin_country_code: shippingCountryCode,
         shipping_fee_amount: shippingFeeAmount,
         shipping_fee_payer: form.shippingFeePayer,
         ships_internationally: form.shipsInternationally,
@@ -148,6 +154,11 @@ export default function DeposerPage() {
           <div className="space-y-2">
             <Label htmlFor="shippingCountry">Pays d'expédition</Label>
             <Input id="shippingCountry" maxLength={80} value={form.shippingCountry} onChange={(e) => update("shippingCountry", e.target.value)} placeholder="Ex. Japon, France, Canada..." autoComplete="country-name" required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="shippingCountryCode">Code pays ISO (2 lettres)</Label>
+            <Input id="shippingCountryCode" maxLength={2} value={form.shippingCountryCode} onChange={(e) => update("shippingCountryCode", e.target.value.toUpperCase())} placeholder="Ex. FR, GP, JP, CA" required />
+            <p className="text-xs text-muted-foreground">Ce code permet de vérifier les destinations avec les transporteurs.</p>
           </div>
           <div className="space-y-2">
             <Label htmlFor="shippingFee">Frais d'expédition estimés (€)</Label>
