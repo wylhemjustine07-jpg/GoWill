@@ -121,7 +121,7 @@ export default function SellerShippingOriginPage() {
     <section className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
       <div className="mb-8">
         <p className="text-sm font-semibold text-violet-700">Espace vendeur</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight">Adresse d'expédition</h1>
+        <h1 className="mt-2 text-3xl font-bold tracking-tight">Adresse d&apos;expédition</h1>
         <p className="mt-2 text-sm text-muted-foreground">Cette adresse sert uniquement à demander des tarifs transporteur. Elle n&apos;est pas affichée sur tes annonces.</p>
       </div>
 
@@ -148,7 +148,7 @@ export default function SellerShippingOriginPage() {
         </CardContent>
       </Card>
 
-      <p className="mt-4 rounded-lg border p-3 text-xs text-muted-foreground">Confidentialité : l&apos;adresse complète n&apos;est pas publique. Elle est accessible au compte vendeur et utilisée côté serveur pour les demandes de tarifs. Demande l&apos;aide d&apos;un parent ou d'un responsable avant d'enregistrer une adresse personnelle.</p>
+      <p className="mt-4 rounded-lg border p-3 text-xs text-muted-foreground">Confidentialité : l&apos;adresse complète n&apos;est pas publique. Elle est accessible au compte vendeur et utilisée côté serveur pour les demandes de tarifs. Demande l&apos;aide d&apos;un parent ou d&apos;un responsable avant d&apos;enregistrer une adresse personnelle.</p>
       <Button asChild variant="outline" className="mt-5"><Link href="/account/annonces">Retour à mes annonces</Link></Button>
     </section>
   )
