@@ -21,7 +21,7 @@ export default function CartPage() {
   if (!mounted) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-        <PageHeader title="Shopping Cart" />
+        <PageHeader title="Mon panier" />
       </div>
     )
   }
@@ -29,13 +29,13 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-        <PageHeader title="Shopping Cart" />
+        <PageHeader title="Mon panier" />
         <EmptyState
           icon={ShoppingBag}
-          title="Your cart is empty"
-          description="Looks like you haven't added anything to your cart yet."
-          actionLabel="Continue Shopping"
-          actionHref="/shop"
+          title="Ton panier est vide"
+          description="Ajoute une annonce pour la retrouver ici."
+          actionLabel="Découvrir les annonces"
+          actionHref="/annonces"
         />
       </div>
     )
@@ -47,7 +47,10 @@ export default function CartPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 pb-16 sm:px-6 sm:py-16 lg:px-8">
-      <PageHeader title="Shopping Cart" />
+      <PageHeader title="Mon panier" />
+      <p className="mt-2 text-sm text-muted-foreground">
+        Les annonces correspondent à des articles uniques. Les frais d'expédition sont des estimations tant qu'un transporteur n'a pas confirmé un devis.
+      </p>
       <div className="mt-8">
         <div className="divide-y">
           {items.map((item) => (
@@ -58,10 +61,10 @@ export default function CartPage() {
         <CartSummary subtotal={subtotal} shipping={shipping} />
         <div className="mt-8 flex flex-col gap-3">
           <Button size="lg" asChild>
-            <Link href="/checkout">Proceed to Checkout</Link>
+            <Link href="/checkout">Continuer vers la livraison</Link>
           </Button>
           <Button variant="outline" asChild>
-            <Link href="/shop">Continue Shopping</Link>
+            <Link href="/annonces">Continuer mes achats</Link>
           </Button>
         </div>
       </div>

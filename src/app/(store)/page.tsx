@@ -6,8 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { siteConfig } from "@/lib/config"
 import { NewsletterForm } from "@/components/layout/newsletter-form"
-import { PLACEHOLDER_IMAGE } from "@/lib/constants"
-import { categoryRepository } from "@/lib/repositories"
 import { createClient } from "@/lib/supabase/server"
 
 export const metadata: Metadata = {
@@ -23,8 +21,20 @@ export const metadata: Metadata = {
   keywords: ["GoWill", "marketplace", "acheter", "vendre", "annonces", "seconde main"],
 }
 
+const categories = [
+  { name: "Mode", icon: "👕" },
+  { name: "Maison", icon: "🏠" },
+  { name: "High-tech", icon: "💻" },
+  { name: "Téléphones", icon: "📱" },
+  { name: "Jeux vidéo", icon: "🎮" },
+  { name: "Sports et loisirs", icon: "⚽" },
+  { name: "Beauté", icon: "✨" },
+  { name: "Livres", icon: "📚" },
+  { name: "Jouets", icon: "🧸" },
+  { name: "Autre", icon: "🛍️" },
+]
+
 export default async function HomePage() {
-  const categories = await categoryRepository.list()
   const supabase = await createClient()
   const { data: latestListings } = await supabase
     .from("listings")
@@ -75,19 +85,15 @@ export default async function HomePage() {
             Tout voir
           </Link>
         </div>
-        <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {categories.map((category) => (
-            <Link key={category.id} href={`/${category.slug}`} className="group">
-              <div className="relative aspect-square overflow-hidden rounded-xl bg-neutral-100">
-                <Image
-                  src={category.image?.url ?? PLACEHOLDER_IMAGE}
-                  alt={category.image?.alt ?? category.name}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  sizes="(max-width: 768px) 50vw, 16vw"
-                />
-              </div>
-              <h3 className="mt-3 text-center text-sm font-medium group-hover:text-violet-700">
+            <Link
+              key={category.name}
+              href={"/annonces?category=" + encodeURIComponent(category.name)}
+              className="group flex min-h-28 flex-col items-center justify-center rounded-xl border bg-white p-4 text-center transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
+            >
+              <span className="text-3xl" aria-hidden="true">{category.icon}</span>
+              <h3 className="mt-3 text-sm font-semibold group-hover:text-violet-700">
                 {category.name}
               </h3>
             </Link>
