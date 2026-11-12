@@ -44,13 +44,14 @@ export default function ConversationPage() {
 
   useEffect(() => {
     if (!isReady || !user) return
+    const currentUser = user
     let active = true
     const supabase = createClient()
     async function initialize() {
       const { data: row, error } = await supabase.from("conversations").select("id,listing_id,buyer_id,seller_id").eq("id", params.id).maybeSingle()
       if (error || !row) { if (active) { toast.error("Conversation introuvable."); setLoading(false) }; return }
       const current = row as Conversation
-      const otherId = current.buyer_id === user.id ? current.seller_id : current.buyer_id
+      const otherId = current.buyer_id === currentUser.id ? current.seller_id : current.buyer_id
       const [{ data: item }, { data: profile }] = await Promise.all([
         supabase.from("listings").select("id,title,price,image_urls").eq("id", current.listing_id).maybeSingle(),
         supabase.from("profiles").select("id,display_name,username").eq("id", otherId).maybeSingle(),
