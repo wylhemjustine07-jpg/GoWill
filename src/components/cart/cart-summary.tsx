@@ -12,8 +12,7 @@ interface CartSummaryProps {
 export function CartSummary({ subtotal, shipping: providedShipping }: CartSummaryProps) {
   const hasCustomShipping = providedShipping !== undefined
   const shipping = providedShipping ?? (subtotal >= siteConfig.freeShippingThreshold ? 0 : 599)
-  const tax = Math.round(subtotal * siteConfig.taxRate)
-  const total = subtotal + shipping + tax
+  const total = subtotal + shipping
 
   return (
     <div className="space-y-3">
@@ -26,8 +25,8 @@ export function CartSummary({ subtotal, shipping: providedShipping }: CartSummar
         <span>{shipping === 0 ? "Offerte" : formatPrice(shipping)}</span>
       </div>
       <div className="flex justify-between text-sm">
-        <span className="text-muted-foreground">Taxes estimées</span>
-        <span>{formatPrice(tax)}</span>
+        <span className="text-muted-foreground">Taxes et douanes</span>
+        <span className="text-right text-muted-foreground">Non calculées</span>
       </div>
       <Separator />
       <div className="flex justify-between font-medium">

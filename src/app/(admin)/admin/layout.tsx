@@ -5,9 +5,9 @@ import { LayoutDashboard, Package, Users } from "lucide-react"
 import { useAuthGuard } from "@/hooks/use-auth-guard"
 
 const adminNav = [
-  { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-  { name: "Orders", href: "/admin/orders", icon: Package },
-  { name: "Customers", href: "/admin/customers", icon: Users },
+  { name: "Tableau de bord", href: "/admin", icon: LayoutDashboard },
+  { name: "Commandes", href: "/admin/orders", icon: Package },
+  { name: "Membres", href: "/admin/customers", icon: Users },
 ]
 
 export default function AdminLayout({
@@ -41,7 +41,7 @@ export default function AdminLayout({
       <aside className="hidden w-64 border-r bg-neutral-50 lg:block">
         <div className="flex h-16 items-center border-b px-6">
           <Link href="/admin" className="text-lg font-semibold">
-            Admin
+            Administration GoWill
           </Link>
         </div>
         <nav className="space-y-1 p-4">
