@@ -432,7 +432,7 @@ export default function CheckoutPage() {
               <CartSummary subtotal={subtotal} shipping={shippingEstimate} />
               <div className="rounded-lg bg-muted/50 p-3 text-xs text-muted-foreground"><PackageCheck className="mr-2 inline h-4 w-4" />Mode choisi : {deliveryMethod === "home" ? "Livraison à domicile" : "Point relais"}</div>
               <Button type="submit" size="lg" className="w-full" disabled={loading}>{loading ? "Préparation..." : "Voir l'aperçu de commande"}</Button>
-              <p className="text-center text-xs text-muted-foreground">Les devis Shippo disponibles sont des tarifs transporteur ; sinon, l'estimation du vendeur est utilisée. Les douanes et taxes d&apos;importation restent exclues.</p>
+              <p className="text-center text-xs text-muted-foreground">Les devis Shippo disponibles sont des tarifs transporteur ; sinon, l&apos;estimation du vendeur est utilisée. Les douanes et taxes d&apos;importation restent exclues.</p>
             </CardContent>
           </Card>
         </div>
