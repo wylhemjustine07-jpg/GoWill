@@ -61,15 +61,15 @@ export const useCartStore = create<CartState>()(
                       shippingFeeAmount: item.shippingFeeAmount ?? i.shippingFeeAmount,
                       shippingFeePayer: item.shippingFeePayer ?? i.shippingFeePayer,
                       shipsInternationally: item.shipsInternationally ?? i.shipsInternationally,
-                      quantity: i.quantity + (item.quantity ?? 1),
-                      lineTotal: i.price * (i.quantity + (item.quantity ?? 1)),
+                      quantity: item.sellerId || i.sellerId ? 1 : i.quantity + (item.quantity ?? 1),
+                      lineTotal: i.price * (item.sellerId || i.sellerId ? 1 : i.quantity + (item.quantity ?? 1)),
                     }
                   : i
               ),
             }
           }
 
-          const quantity = item.quantity ?? 1
+          const quantity = item.sellerId ? 1 : item.quantity ?? 1
           const newItem: CartItem = {
             id: item.variantId,
             variantId: item.variantId,
@@ -108,7 +108,7 @@ export const useCartStore = create<CartState>()(
         set((state) => ({
           items: state.items.map((i) =>
             i.variantId === variantId
-              ? { ...i, quantity, lineTotal: i.price * quantity }
+              ? { ...i, quantity: i.sellerId ? 1 : quantity, lineTotal: i.price * (i.sellerId ? 1 : quantity) }
               : i
           ),
         }))
