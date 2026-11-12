@@ -11,13 +11,12 @@ import { CartItem } from "@/components/cart/cart-item"
 import { CartSummary } from "@/components/cart/cart-summary"
 import { calculateCartShipping } from "@/lib/shipping"
 import { siteConfig } from "@/lib/config"
-import { useEffect, useState } from "react"
+import { useMounted } from "@/hooks/use-mounted"
 
 export default function CartPage() {
   const items = useCartStore((s) => s.items)
   const getSubtotal = useCartStore((s) => s.getSubtotal)
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
+  const mounted = useMounted()
 
   if (!mounted) {
     return (
