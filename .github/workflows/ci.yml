@@ -1,0 +1,40 @@
+name: GoWill CI
+
+on:
+  push:
+    branches:
+      - feature/gowill-marketplace
+  pull_request:
+    branches:
+      - feature/gowill-marketplace
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Lint and production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: https://ltvbbmazvgvgaujswtux.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_un0gh9csvkNJ_P5P28lyIQ_JEST0v2j
+      NEXT_PUBLIC_BASE_URL: http://localhost:3000
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Build Next.js application
+        run: npm run build
