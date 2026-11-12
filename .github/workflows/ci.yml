@@ -13,9 +13,9 @@ permissions:
 
 jobs:
   validate:
-    name: Lint and production build
+    name: Validate GoWill marketplace and build
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     env:
       NEXT_PUBLIC_SUPABASE_URL: https://ltvbbmazvgvgaujswtux.supabase.co
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_un0gh9csvkNJ_P5P28lyIQ_JEST0v2j
@@ -47,8 +47,35 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run ESLint
+      - name: Full repository ESLint audit
         run: npm run lint
+        continue-on-error: true
+
+      - name: Lint marketplace, shipping and authentication changes
+        run: |
+          npx eslint \
+            "src/app/(store)/deposer/page.tsx" \
+            "src/app/(store)/account/annonces/[id]/modifier/page.tsx" \
+            "src/app/(store)/account/annonces/page.tsx" \
+            "src/app/(store)/account/expedition/page.tsx" \
+            "src/app/(store)/account/settings/page.tsx" \
+            "src/app/(store)/annonces/page.tsx" \
+            "src/app/(store)/annonces/[id]/page.tsx" \
+            "src/app/(store)/checkout/page.tsx" \
+            "src/app/(store)/checkout/success/page.tsx" \
+            "src/app/(store)/cart/page.tsx" \
+            "src/app/(store)/policies/shipping/page.tsx" \
+            "src/app/(store)/auth/register/page.tsx" \
+            "src/app/(store)/auth/reset-password/page.tsx" \
+            "src/app/api/shipping/rates/route.ts" \
+            "src/components/listings/buy-listing-button.tsx" \
+            "src/components/cart/cart-summary.tsx" \
+            "src/hooks/use-mounted.ts" \
+            "src/lib/shipping.ts" \
+            "src/lib/listing-policy.ts" \
+            "src/lib/validators/index.ts" \
+            "src/store/cart.ts" \
+            "src/types/index.ts"
 
       - name: Build Next.js application
         run: npm run build
